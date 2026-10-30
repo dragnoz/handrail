@@ -2,6 +2,10 @@
 
 One line per change, per version.
 
+## Unreleased
+
+- guides/install-handrail.md: a guide, in Handrail's own format, that installs it in the other browser.
+
 ## 0.1.1 — 2026-10-30
 
 - Firefox: the sidebar from the same code (`pnpm build` makes `dist/` for Chrome and `dist-firefox/` for Firefox); the toolbar button toggles it.
