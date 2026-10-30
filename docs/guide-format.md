@@ -14,35 +14,35 @@ A guide is a Markdown file. It can be written in a text editor or produced by a 
 
 ## Example: headings with front matter
 
-<!-- example: nozlab -->
+<!-- example: deploy-key -->
 ```markdown
 ---
-title: Set up the site on nozlab
-id: nozlab-site-setup
-by: Claude (NOZ)
+title: Add a deploy key to a repository
+id: add-deploy-key
+by: Claude
 for: Dragnoz
 version: 1
-sources: https://example.org/guides/nozlab-site-setup.md
+sources: https://example.org/guides/add-deploy-key.md
 ---
 
-Makes the `nozsite` user and installs the one-command key, once.
+Lets one server read one repository, and nothing else.
 
-## 1. Open a terminal on this laptop
-Not on Camelot: that machine holds no key for nozlab.
+## 1. Open a terminal on the server
+Not on your own computer: the key belongs to the server.
 
-## 2. Run the setup
-    copy: ssh perseus-host 'sh /root/nozlab-site-setup.sh'
-    expect: it ends with "nozlab-site is set up. Camelot may publish now."
+## 2. Make the key
+    copy: ssh-keygen -t ed25519 -f ~/.ssh/deploy_key -N ""
+    expect: two new files in ~/.ssh: deploy_key and deploy_key.pub
 
-## 3. Restart the Perseus server
-    url: http://camelot:25895/*
-    target: button:has-text("Restart")
-Say "restart" to Claude, or press the button on the Servers page.
+## 3. Open the repository's deploy keys
+    url: https://git.example.org/*/settings/keys
+    target: text=Add deploy key
+In the repository: Settings, then Deploy keys.
 
-## 4. Publish a page
-    url: http://camelot:25895/*
-    target: text=🌐 Publish
-Open any board's Workbook and press Publish.
+## 4. Add the public half
+    url: https://git.example.org/*/settings/keys/new
+    target: button:has-text("Add key")
+Paste the one line from `deploy_key.pub` and press Add key. Leave write access off.
 ```
 
 ## Example: a numbered list, no front matter
@@ -98,7 +98,7 @@ The field block is the lines right under the step's title (blank lines before it
 
 ### How `url:` matches
 
-- A pattern with `*` matches any characters there: `http://camelot:25895/*` matches every page on that server; `https://*.example.org/*` matches every page on its subdomains.
+- A pattern with `*` matches any characters there: `http://wiki.example:8080/*` matches every page on that server; `https://*.example.org/*` matches every page on its subdomains.
 - A plain address matches that page exactly. The `#fragment`, a trailing slash and letter case are ignored. `https://example.org/status` and `https://example.org/status/#top` are the same page.
 - "Where am I" looks at the steps after the current one only, and offers the first that matches. It never jumps by itself.
 
@@ -109,45 +109,45 @@ The parser turns Markdown into exactly this shape, and a guide may arrive as JSO
 <!-- example: json -->
 ```json
 {
-  "id": "nozlab-site-setup",
-  "title": "Set up the site on nozlab",
-  "by": "Claude (NOZ)",
+  "id": "add-deploy-key",
+  "title": "Add a deploy key to a repository",
+  "by": "Claude",
   "for": "Dragnoz",
   "version": "1",
-  "sources": ["https://example.org/guides/nozlab-site-setup.md"],
-  "intro": "Makes the `nozsite` user and installs the one-command key, once.",
+  "sources": ["https://example.org/guides/add-deploy-key.md"],
+  "intro": "Lets one server read one repository, and nothing else.",
   "steps": [
     {
-      "title": "Open a terminal on this laptop",
-      "body": "Not on Camelot: that machine holds no key for nozlab.",
+      "title": "Open a terminal on the server",
+      "body": "Not on your own computer: the key belongs to the server.",
       "url": [],
       "copy": [],
       "target": [],
       "optional": false
     },
     {
-      "title": "Run the setup",
+      "title": "Make the key",
       "body": "",
       "url": [],
-      "copy": ["ssh perseus-host 'sh /root/nozlab-site-setup.sh'"],
-      "expect": "it ends with \"nozlab-site is set up. Camelot may publish now.\"",
+      "copy": ["ssh-keygen -t ed25519 -f ~/.ssh/deploy_key -N \"\""],
+      "expect": "two new files in ~/.ssh: deploy_key and deploy_key.pub",
       "target": [],
       "optional": false
     },
     {
-      "title": "Restart the Perseus server",
-      "body": "Say \"restart\" to Claude, or press the button on the Servers page.",
-      "url": ["http://camelot:25895/*"],
+      "title": "Open the repository's deploy keys",
+      "body": "In the repository: Settings, then Deploy keys.",
+      "url": ["https://git.example.org/*/settings/keys"],
       "copy": [],
-      "target": ["button:has-text(\"Restart\")"],
+      "target": ["text=Add deploy key"],
       "optional": false
     },
     {
-      "title": "Publish a page",
-      "body": "Open any board's Workbook and press Publish.",
-      "url": ["http://camelot:25895/*"],
+      "title": "Add the public half",
+      "body": "Paste the one line from `deploy_key.pub` and press Add key. Leave write access off.",
+      "url": ["https://git.example.org/*/settings/keys/new"],
       "copy": [],
-      "target": ["text=🌐 Publish"],
+      "target": ["button:has-text(\"Add key\")"],
       "optional": false
     }
   ]
@@ -162,7 +162,7 @@ A feed is a JSON list at an address:
 
 ```json
 [
-  { "id": "nozlab-site-setup", "title": "Set up the site on nozlab", "url": "https://example.org/guides/nozlab-site-setup.md", "updated": "2026-10-30T10:00:00Z", "for": "Dragnoz", "done": false }
+  { "id": "add-deploy-key", "title": "Add a deploy key to a repository", "url": "https://example.org/guides/add-deploy-key.md", "updated": "2026-10-30T10:00:00Z", "for": "Dragnoz", "done": false }
 ]
 ```
 

@@ -48,7 +48,7 @@ const test = base.extend<{ context: BrowserContext; extensionId: string; panel: 
   site: async ({}, use) => {
     const server = createServer((req, res) => {
       res.setHeader('content-type', 'text/html');
-      res.end(`<!doctype html><title>Camelot</title><h1>Camelot</h1><p>${req.url}</p>`);
+      res.end(`<!doctype html><title>Test site</title><h1>Test site</h1><p>${req.url}</p>`);
     });
     await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
     const { port } = server.address() as AddressInfo;

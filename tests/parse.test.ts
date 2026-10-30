@@ -13,46 +13,46 @@ function example(name: string): string {
   return m[1]!;
 }
 
-describe('the headings example (nozlab)', () => {
-  const g = parseGuide(example('nozlab'));
+describe('the headings example (deploy-key)', () => {
+  const g = parseGuide(example('deploy-key'));
 
   it('reads the front matter', () => {
-    expect(g.title).toBe('Set up the site on nozlab');
-    expect(g.id).toBe('nozlab-site-setup');
-    expect(g.by).toBe('Claude (NOZ)');
+    expect(g.title).toBe('Add a deploy key to a repository');
+    expect(g.id).toBe('add-deploy-key');
+    expect(g.by).toBe('Claude');
     expect(g.for).toBe('Dragnoz');
     expect(g.version).toBe('1');
-    expect(g.sources).toEqual(['https://example.org/guides/nozlab-site-setup.md']);
+    expect(g.sources).toEqual(['https://example.org/guides/add-deploy-key.md']);
   });
 
   it('keeps the intro', () => {
-    expect(g.intro).toBe('Makes the `nozsite` user and installs the one-command key, once.');
+    expect(g.intro).toBe('Lets one server read one repository, and nothing else.');
   });
 
   it('finds four steps with clean titles', () => {
     expect(g.steps.map((s) => s.title)).toEqual([
-      'Open a terminal on this laptop',
-      'Run the setup',
-      'Restart the Perseus server',
-      'Publish a page',
+      'Open a terminal on the server',
+      'Make the key',
+      "Open the repository's deploy keys",
+      'Add the public half',
     ]);
   });
 
   it('separates fields from the body', () => {
     const [s1, s2, s3, s4] = g.steps;
-    expect(s1!.body).toBe('Not on Camelot: that machine holds no key for nozlab.');
+    expect(s1!.body).toBe('Not on your own computer: the key belongs to the server.');
     expect(s1!.copy).toEqual([]);
 
-    expect(s2!.copy).toEqual(["ssh perseus-host 'sh /root/nozlab-site-setup.sh'"]);
-    expect(s2!.expect).toBe('it ends with "nozlab-site is set up. Camelot may publish now."');
+    expect(s2!.copy).toEqual(['ssh-keygen -t ed25519 -f ~/.ssh/deploy_key -N ""']);
+    expect(s2!.expect).toBe('two new files in ~/.ssh: deploy_key and deploy_key.pub');
     expect(s2!.body).toBe('');
 
-    expect(s3!.url).toEqual(['http://camelot:25895/*']);
-    expect(s3!.target).toEqual(['button:has-text("Restart")']);
-    expect(s3!.body).toBe('Say "restart" to Claude, or press the button on the Servers page.');
+    expect(s3!.url).toEqual(['https://git.example.org/*/settings/keys']);
+    expect(s3!.target).toEqual(['text=Add deploy key']);
+    expect(s3!.body).toBe('In the repository: Settings, then Deploy keys.');
 
-    expect(s4!.url).toEqual(['http://camelot:25895/*']);
-    expect(s4!.target).toEqual(['text=🌐 Publish']);
+    expect(s4!.url).toEqual(['https://git.example.org/*/settings/keys/new']);
+    expect(s4!.target).toEqual(['button:has-text("Add key")']);
     expect(s4!.optional).toBe(false);
   });
 

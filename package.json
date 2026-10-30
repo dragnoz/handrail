@@ -1,6 +1,6 @@
 {
   "name": "handrail",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "A step-by-step guide at the side of the page. A browser extension.",
   "license": "MIT",

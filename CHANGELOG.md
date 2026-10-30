@@ -2,9 +2,13 @@
 
 One line per change, per version.
 
-## Unreleased
+## 0.1.4 — 2026-10-30
 
+- No internal names left: examples, guides, tests and screenshots use neutral names and example.org addresses.
+- guides/add-deploy-key.md replaces the old example guide; the README, the brief and the format doc use it.
+- guides/install-handrail.md: no folder paths from one machine; it points to the practice guide.
 - guides/try-handrail.md: an eight-step practice guide that shows every part of the drawer on harmless pages.
+- The rule against internal names is written into CONTRIBUTING.md and CLAUDE.md.
 
 ## 0.1.3 — 2026-10-30
 

@@ -5,7 +5,7 @@ Handrail is small on purpose. Read `BRIEF.md` for what it is and is not.
 ## The rules
 
 - Every release bumps the version in `package.json` (the manifest takes it from there) and adds one terse line per change to `CHANGELOG.md`.
-- Plain words in the UI, the README and every error. No marketing voice. The person in examples is Dragnoz.
+- Plain words in the UI, the README and every error. No marketing voice. The person in examples is Dragnoz. No internal names: no machine, server, host, folder or private product names; example addresses are example.org ones.
 - The drawer never acts by itself: no auto-jump, no auto-send, no auto-click.
 - No telemetry, no remote code, no `<all_urls>`. Permissions are the minimum, asked for when needed.
 - `docs/guide-format.md` is the single source of truth for the format. The parser's tests read its examples; change the doc first, then the parser.

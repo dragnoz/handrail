@@ -9,9 +9,8 @@ version: 1
 You have Handrail in one browser. This guide installs it in the other one, from the build on this machine. Walk it in the drawer you already have.
 
 ## 1. Find the build
-    copy: C:\Users\serse\Dragnoz\projects\handrail
     optional: true
-The repo folder holds `dist` for Chrome and `dist-firefox` for Firefox. If they are missing, run `pnpm build` there first.
+The Handrail folder holds `dist` for Chrome and `dist-firefox` for Firefox. If they are missing, run `pnpm build` there first.
 
 ## 2. Chrome: open the extensions page
     copy: chrome://extensions
@@ -23,9 +22,8 @@ Paste the address into Chrome's address bar. The drawer cannot open it for you; 
 The switch is at the top right.
 
 ## 4. Chrome: load the folder
-    copy: C:\Users\serse\Dragnoz\projects\handrail\dist
     expect: a Handrail card appears in the list, switched on
-Press **Load unpacked** and choose the `dist` folder.
+Press **Load unpacked** and choose the `dist` folder inside the Handrail folder.
 
 ## 5. Chrome: open the drawer
     expect: the drawer opens at the right side of the window, on its home screen
@@ -37,7 +35,6 @@ Press the Handrail button in the toolbar. If it is hidden, press the puzzle-piec
 Paste the address into Firefox's address bar. Needs Firefox 142 or newer.
 
 ## 7. Firefox: load the manifest
-    copy: C:\Users\serse\Dragnoz\projects\handrail\dist-firefox\manifest.json
     expect: Handrail appears under "Temporary Extensions"
 Press **Load Temporary Add-on…** and choose `manifest.json` inside `dist-firefox`.
 
@@ -47,4 +44,4 @@ Press the Handrail button in the toolbar. A temporary add-on is gone when Firefo
 
 ## 9. Walk a real guide
     optional: true
-Paste a guide into the new drawer's box and press **Add guide**. The one from `guides/nozlab-site-setup.md` is a good first walk.
+Paste a guide into the new drawer's box and press **Add guide**. The practice guide in `guides/try-handrail.md` is a good first walk.

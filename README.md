@@ -4,7 +4,7 @@ A step-by-step guide at the side of the page you are working on.
 
 When you have to do something complex on the web, the instructions live in one window and the work in another. Handrail puts the guide in a drawer beside the page: one step at a time, a value to copy with one click, links that open under the drawer, and a quiet "you seem to be on step 6, jump?" when you land on the page a later step is about.
 
-![The drawer with a guide: step 1 done, step 2 open with a command to copy, steps 3 and 4 below](docs/screenshots/0.1-drawer.png)
+![The drawer with a guide: step 1 done, step 2 open with a command to copy and what you should see, steps 3 and 4 below](docs/screenshots/0.1-drawer.png)
 
 It is not an assistant and not an automation tool. The guide is written elsewhere, by a person or by an assistant. Handrail is the rail you hold while you walk it. There is no account, no server and no telemetry. Nothing leaves the browser.
 
@@ -39,21 +39,21 @@ A guide is Markdown. Steps are the `## ` headings (or a numbered list). Fields s
 
 ```markdown
 ---
-title: Set up the site on nozlab
-id: nozlab-site-setup
+title: Add a deploy key to a repository
+id: add-deploy-key
 for: Dragnoz
 ---
 
-## 1. Open a terminal on this laptop
-Not on Camelot: that machine holds no key for nozlab.
+## 1. Open a terminal on the server
+Not on your own computer: the key belongs to the server.
 
-## 2. Run the setup
-    copy: ssh perseus-host 'sh /root/nozlab-site-setup.sh'
-    expect: it ends with "nozlab-site is set up."
+## 2. Make the key
+    copy: ssh-keygen -t ed25519 -f ~/.ssh/deploy_key -N ""
+    expect: two new files in ~/.ssh: deploy_key and deploy_key.pub
 
-## 3. Restart the Perseus server
-    url: http://camelot:25895/*
-Press the button on the Servers page.
+## 3. Add the public half
+    url: https://git.example.org/*/settings/keys
+In the repository: Settings, Deploy keys, Add deploy key.
 ```
 
 | field | meaning |
@@ -65,7 +65,7 @@ Press the button on the Servers page.
 | `optional: true` | the step may be skipped. |
 | `target:`, `note:` | for 0.3 (pointing at the page) and 0.2 (notes back). |
 
-The whole contract, with the JSON form and feeds, is in [docs/guide-format.md](docs/guide-format.md). Two example guides are in [guides/](guides/), one of them a guide that teaches you to write one.
+The whole contract, with the JSON form and feeds, is in [docs/guide-format.md](docs/guide-format.md). Example guides are in [guides/](guides/): a practice walk through the drawer, one that teaches you to write a guide, and the one above.
 
 ## Permissions, and why
 

@@ -36,32 +36,32 @@ A guide is a Markdown file. Front matter is optional. Steps are the ordered list
 
 ```markdown
 ---
-title: Set up the site on nozlab
-id: nozlab-site-setup
-by: Claude (NOZ)
+title: Add a deploy key to a repository
+id: add-deploy-key
+by: Claude
 for: Dragnoz
 version: 1
-sources: https://example.org/guides/nozlab-site-setup.md
+sources: https://example.org/guides/add-deploy-key.md
 ---
 
-Makes the `nozsite` user and installs the one-command key, once.
+Lets one server read one repository, and nothing else.
 
-## 1. Open a terminal on this laptop
-Not on Camelot: that machine holds no key for nozlab.
+## 1. Open a terminal on the server
+Not on your own computer: the key belongs to the server.
 
-## 2. Run the setup
-    copy: ssh perseus-host 'sh /root/nozlab-site-setup.sh'
-    expect: it ends with "nozlab-site is set up. Camelot may publish now."
+## 2. Make the key
+    copy: ssh-keygen -t ed25519 -f ~/.ssh/deploy_key -N ""
+    expect: two new files in ~/.ssh: deploy_key and deploy_key.pub
 
-## 3. Restart the Perseus server
-    url: http://camelot:25895/*
-    target: button:has-text("Restart")
-Say "restart" to Claude, or press the button on the Servers page.
+## 3. Open the repository's deploy keys
+    url: https://git.example.org/*/settings/keys
+    target: text=Add deploy key
+In the repository: Settings, then Deploy keys.
 
-## 4. Publish a page
-    url: http://camelot:25895/*
-    target: text=🌐 Publish
-Open any board's Workbook and press Publish.
+## 4. Add the public half
+    url: https://git.example.org/*/settings/keys/new
+    target: button:has-text("Add key")
+Paste the one line from `deploy_key.pub` and press Add key. Leave write access off.
 ```
 
 Fields (all optional, one per line, indented under the step):
@@ -133,7 +133,7 @@ Each milestone ships with its version bump, its changelog lines, and a screensho
 
 ## Acceptance (0.1)
 
-Dragnoz opens Chrome, opens the drawer, pastes a guide Claude wrote for him (the nozlab setup above), and does the job without opening a second window: copies the command from the chip, is offered the jump when he lands on Camelot's page, ticks through, and at the end has a note in the history. Nothing was sent anywhere. The extension asked for no permission beyond the side panel and storage.
+Dragnoz opens Chrome, opens the drawer, pastes a guide Claude wrote for him (the deploy key guide above), and does the job without opening a second window: copies the command from the chip, is offered the jump when he lands on the repository's settings page, ticks through, and at the end has a note in the history. Nothing was sent anywhere. The extension asked for no permission beyond the side panel and storage.
 
 ## What this is not (v1)
 
@@ -142,7 +142,7 @@ Not an assistant (no model inside; the guide comes from outside); not a recorder
 ## Rules for whoever builds it
 
 - Version and changelog on every release; plain words everywhere (README, UI, errors); no marketing voice.
-- The person is **Dragnoz** in any example or acknowledgement; no real names.
+- The person is **Dragnoz** in any example or acknowledgement; no real names. No internal names either: no machine, server, host, folder or private product names; example addresses are `example.org` ones.
 - The drawer never does anything by itself: no auto-jump, no auto-send, no auto-click.
 - Small, boring dependencies; no framework unless it earns its place; no telemetry library, ever.
 - When a store policy and a feature collide, the policy wins and the feature degrades gracefully.
@@ -150,4 +150,4 @@ Not an assistant (no model inside; the guide comes from outside); not a recorder
 
 ## How the first guides will arrive
 
-Two tools already produce step-by-step guides for Dragnoz: the Nitai Office (its guides page) and Perseus (its Pages). Each will expose a feed in the format above once 0.2 exists; until then he pastes. The format is the only coupling: Handrail knows nothing about either tool.
+Anyone can write a guide in this format, by hand or with a tool. A guide reaches the drawer three ways: pasted; from a feed someone keeps for the sites they know; or from the site itself, which hosts its own feed. Dragnoz's own tools that already write step-by-step guides will each expose a feed once 0.2 exists; until then he pastes. The format is the only coupling: Handrail knows nothing about any one tool or site.

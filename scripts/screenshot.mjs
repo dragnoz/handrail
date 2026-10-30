@@ -1,10 +1,10 @@
-// Loads the built extension in Chromium, opens the drawer page with the nozlab guide and takes the README pictures.
+// Loads the built extension in Chromium, opens the drawer page with the example guide and takes the README pictures.
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const dist = resolve('dist');
-const guide = readFileSync(resolve('guides/nozlab-site-setup.md'), 'utf8');
+const guide = readFileSync(resolve('guides/add-deploy-key.md'), 'utf8');
 const out = resolve('docs/screenshots');
 mkdirSync(out, { recursive: true });
 
@@ -24,9 +24,9 @@ const page = await context.newPage();
 await page.goto(`chrome-extension://${id}/src/sidepanel/index.html`);
 await page.getByLabel('Paste a guide, or a link to one').fill(guide);
 await page.getByRole('button', { name: 'Add guide' }).click();
-await page.getByRole('heading', { name: 'Open a terminal on this laptop' }).waitFor();
+await page.getByRole('heading', { name: 'Open a terminal on the server' }).waitFor();
 await page.keyboard.press('n');
-await page.getByRole('heading', { name: 'Run the setup' }).waitFor();
+await page.getByRole('heading', { name: 'Make the key' }).waitFor();
 await page.waitForTimeout(2300); // let the "Guide added" line fade
 await page.screenshot({ path: resolve(out, '0.1-drawer.png') });
 

@@ -3,9 +3,9 @@ import { urlMatches, whereAmI, parseGuide } from '../src/lib/guide';
 
 describe('urlMatches', () => {
   it('matches a pattern with * anywhere', () => {
-    expect(urlMatches('http://camelot:25895/*', 'http://camelot:25895/boards/edu')).toBe(true);
-    expect(urlMatches('http://camelot:25895/*', 'http://camelot:25895/')).toBe(true);
-    expect(urlMatches('http://camelot:25895/*', 'http://camelot:25896/')).toBe(false);
+    expect(urlMatches('http://wiki.example:8080/*', 'http://wiki.example:8080/pages/home')).toBe(true);
+    expect(urlMatches('http://wiki.example:8080/*', 'http://wiki.example:8080/')).toBe(true);
+    expect(urlMatches('http://wiki.example:8080/*', 'http://wiki.example:8081/')).toBe(false);
     expect(urlMatches('https://*.example.org/*', 'https://docs.example.org/a?b=c')).toBe(true);
     expect(urlMatches('https://*.example.org/*', 'https://example.org/a')).toBe(false);
     expect(urlMatches('*://example.org/*', 'http://example.org/x')).toBe(true);
