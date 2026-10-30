@@ -22,14 +22,16 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - run: pnpm zip
+      # The unpacked builds, not the release zips: GitHub wraps an artifact in its own zip,
+      # so this way the downloaded handrail-firefox.zip has manifest.json at its top and loads as is.
       - uses: actions/upload-artifact@v4
         with:
           name: handrail-chrome
-          path: release/handrail-chrome-*.zip
+          path: dist/
       - uses: actions/upload-artifact@v4
         with:
           name: handrail-firefox
-          path: release/handrail-firefox-*.zip
+          path: dist-firefox/
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -10,7 +10,7 @@ It is not an assistant and not an automation tool. The guide is written elsewher
 
 ## Install
 
-Get the build: download the latest `handrail-chrome` or `handrail-firefox` zip from the Actions tab and unpack it, or build both with `pnpm install && pnpm build` (`dist/` for Chrome, `dist-firefox/` for Firefox).
+Get the build: download the latest `handrail-chrome` or `handrail-firefox` zip from the Actions tab (sign in to GitHub to see them), or build both with `pnpm install && pnpm build` (`dist/` for Chrome, `dist-firefox/` for Firefox). Firefox loads the zip as it is; for Chrome, unpack it first.
 
 **Chrome**
 
@@ -19,7 +19,7 @@ Get the build: download the latest `handrail-chrome` or `handrail-firefox` zip f
 
 **Firefox** (142 or newer)
 
-1. Open `about:debugging#/runtime/this-firefox`, press **Load Temporary Add-on…** and choose `manifest.json` inside the `dist-firefox` folder. A temporary add-on is gone when Firefox closes; a signed build that stays comes with the store listing in 0.4.
+1. Open `about:debugging#/runtime/this-firefox`, press **Load Temporary Add-on…** and choose the downloaded `handrail-firefox.zip`, or `manifest.json` inside the `dist-firefox` folder. A temporary add-on is gone when Firefox closes; a signed build that stays comes with the store listing in 0.4.
 2. Press the Handrail button in the toolbar, or open the sidebar (`Ctrl+B` / `Cmd+B` shows sidebars; pick Handrail). The drawer opens at the side.
 
 Stores come in 0.4.

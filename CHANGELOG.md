@@ -2,6 +2,10 @@
 
 One line per change, per version.
 
+## Unreleased
+
+- CI artifacts are the unpacked builds, so the downloaded handrail-firefox.zip loads straight into Firefox.
+
 ## 0.1.2 — 2026-10-30
 
 - Firefox: the sidebar opens once, right after install, so the first run needs no hunting for a button.
