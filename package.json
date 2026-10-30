@@ -1,0 +1,32 @@
+{
+  "name": "handrail",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A step-by-step guide at the side of the page. A browser extension.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "icons": "node scripts/icons.mjs",
+    "screenshot": "node scripts/screenshot.mjs",
+    "zip": "node scripts/zip.mjs"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.17",
+    "marked": "^18.1.2",
+    "preact": "^11.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@types/chrome": "^0.3.7",
+    "@types/node": "^24.19.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "packageManager": "pnpm@11.15.1"
+}
