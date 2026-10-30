@@ -2,8 +2,9 @@
 
 One line per change, per version.
 
-## Unreleased
+## 0.1.3 — 2026-10-30
 
+- Fix: release zips made on Windows had backslash paths, so Firefox found the manifest but not the drawer page; the zip is now written by our own script, forward slashes only.
 - CI artifacts are the unpacked builds, so the downloaded handrail-firefox.zip loads straight into Firefox.
 
 ## 0.1.2 — 2026-10-30
