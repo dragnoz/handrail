@@ -2,8 +2,9 @@
 
 One line per change, per version.
 
-## Unreleased
+## 0.1.2 — 2026-10-30
 
+- Firefox: the sidebar opens once, right after install, so the first run needs no hunting for a button.
 - guides/install-handrail.md: a guide, in Handrail's own format, that installs it in the other browser.
 
 ## 0.1.1 — 2026-10-30

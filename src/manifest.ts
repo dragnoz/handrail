@@ -37,7 +37,8 @@ export function manifest(target: 'chrome' | 'firefox', version: string): Record<
       default_panel: 'src/sidepanel/index.html',
       default_title: 'Handrail',
       default_icon: 'icons/icon-32.png',
-      open_at_install: false,
+      // Opens once, right after install: the first run needs no hunting for a button.
+      open_at_install: true,
     };
     base.background = { scripts: ['assets/background.js'] };
     base.browser_specific_settings = {
