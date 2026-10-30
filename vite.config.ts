@@ -4,10 +4,10 @@ import { manifest } from './src/manifest.ts';
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
 
-// One codebase; the manifest is generated per browser. 0.1 builds Chrome only.
-const target = (process.env.HANDRAIL_TARGET === 'firefox' ? 'firefox' : 'chrome') as 'chrome' | 'firefox';
-
-export default defineConfig({
+// One codebase, one manifest per browser: `vite build` is Chrome, `vite build --mode firefox` is Firefox.
+export default defineConfig(({ mode }) => {
+  const target = (mode === 'firefox' ? 'firefox' : 'chrome') as 'chrome' | 'firefox';
+  return {
   publicDir: 'public',
   build: {
     outDir: target === 'firefox' ? 'dist-firefox' : 'dist',
@@ -40,4 +40,5 @@ export default defineConfig({
       },
     },
   ],
+  };
 });

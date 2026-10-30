@@ -16,14 +16,17 @@ Handrail is small on purpose. Read `BRIEF.md` for what it is and is not.
 
 ```
 pnpm install
-pnpm build          # dist/ for Chrome (load unpacked)
-pnpm watch          # rebuild on change
+pnpm build          # dist/ for Chrome and dist-firefox/ for Firefox
+pnpm build:chrome   # one of them; pnpm watch rebuilds Chrome on change
 pnpm test           # parser, matcher
 pnpm test:e2e       # the drawer in Chromium (needs a build first)
+pnpm lint:firefox   # web-ext lint on dist-firefox (Playwright cannot load Firefox add-ons, so Firefox is tested by hand)
 pnpm typecheck
 pnpm screenshot     # the README pictures, from the built extension
-pnpm zip            # release/handrail-chrome-<version>.zip
+pnpm zip            # release/handrail-<browser>-<version>.zip
 ```
+
+The browser API is used only through `webextension-polyfill` (`import browser from 'webextension-polyfill'`), never `chrome.*` directly, except the one Chrome-only `sidePanel` call in the background script. The manifest for each browser is generated in `src/manifest.ts`.
 
 Layout:
 

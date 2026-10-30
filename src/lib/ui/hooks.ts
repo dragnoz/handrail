@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import browser, { type Tabs } from 'webextension-polyfill';
 import { loadState, onStateChange, type State } from '../store';
 import { ownWindowId } from '../ext';
 
@@ -37,7 +38,7 @@ export function useActiveTab(): ActiveTab {
     const refresh = async () => {
       try {
         if (windowId === undefined) windowId = await ownWindowId();
-        const [t] = await chrome.tabs.query({ active: true, windowId });
+        const [t] = await browser.tabs.query({ active: true, windowId });
         const key = `${t?.id ?? ''}|${t?.url ?? ''}`;
         if (alive && key !== last) {
           last = key;
@@ -51,20 +52,20 @@ export function useActiveTab(): ActiveTab {
       }
     };
     void refresh();
-    const onActivated = (info: chrome.tabs.OnActivatedInfo) => {
+    const onActivated = (info: Tabs.OnActivatedActiveInfoType) => {
       if (windowId === undefined || info.windowId === windowId) void refresh();
     };
-    const onUpdated = (_id: number, change: chrome.tabs.OnUpdatedInfo, t: chrome.tabs.Tab) => {
+    const onUpdated = (_id: number, change: Tabs.OnUpdatedChangeInfoType, t: Tabs.Tab) => {
       if (!t.active) return;
       if (windowId !== undefined && t.windowId !== windowId) return;
       if (change.url || change.status === 'complete') void refresh();
     };
-    chrome.tabs.onActivated.addListener(onActivated);
-    chrome.tabs.onUpdated.addListener(onUpdated);
+    browser.tabs.onActivated.addListener(onActivated);
+    browser.tabs.onUpdated.addListener(onUpdated);
     return () => {
       alive = false;
-      chrome.tabs.onActivated.removeListener(onActivated);
-      chrome.tabs.onUpdated.removeListener(onUpdated);
+      browser.tabs.onActivated.removeListener(onActivated);
+      browser.tabs.onUpdated.removeListener(onUpdated);
     };
   }, []);
   return tab;

@@ -1,5 +1,6 @@
-// Everything Handrail keeps lives in chrome.storage.local: guides, progress per guide, settings.
+// Everything Handrail keeps lives in the browser's local extension storage: guides, progress per guide, settings.
 // Nothing is synced. Export/import moves it all as one JSON file.
+import browser, { type Storage } from 'webextension-polyfill';
 import type { Guide } from '../guide';
 
 export interface GuideSource {
@@ -46,7 +47,7 @@ export interface ExportFile extends State {
 
 export const defaultSettings: Settings = { textSize: 'normal' };
 
-const area = () => chrome.storage.local;
+const area = () => browser.storage.local;
 
 export async function loadState(): Promise<State> {
   const r = (await area().get(['guides', 'progress', 'settings'])) as Partial<State>;
@@ -126,7 +127,7 @@ export async function importState(file: ExportFile): Promise<number> {
     if (p) state.progress[id] = p;
   }
   state.settings = { ...state.settings, ...file.settings };
-  await area().set(state);
+  await area().set({ guides: state.guides, progress: state.progress, settings: state.settings });
   return ids.length;
 }
 
@@ -139,8 +140,8 @@ export function onStateChange(cb: () => void): () => void {
   const listener = (_changes: unknown, areaName: string) => {
     if (areaName === 'local') cb();
   };
-  chrome.storage.onChanged.addListener(listener);
-  return () => chrome.storage.onChanged.removeListener(listener);
+  browser.storage.onChanged.addListener(listener);
+  return () => browser.storage.onChanged.removeListener(listener);
 }
 
 // ---- the drawer's own position (which view is open), kept for the browser session only
@@ -150,10 +151,14 @@ export interface UiState {
   guideId?: string;
 }
 
+/** Session storage: gone when the browser closes. Older browsers may lack it; then the drawer opens on Home. */
+const session = (): Storage.StorageArea | undefined =>
+  (browser.storage as unknown as { session?: Storage.StorageArea }).session;
+
 export async function loadUi(): Promise<UiState> {
   try {
-    const r = (await chrome.storage.session.get('ui')) as { ui?: UiState };
-    return r.ui ?? { view: 'home' };
+    const r = (await session()?.get('ui')) as { ui?: UiState } | undefined;
+    return r?.ui ?? { view: 'home' };
   } catch {
     return { view: 'home' };
   }
@@ -161,7 +166,7 @@ export async function loadUi(): Promise<UiState> {
 
 export async function saveUi(ui: UiState): Promise<void> {
   try {
-    await chrome.storage.session.set({ ui });
+    await session()?.set({ ui });
   } catch {
     // session storage is a convenience; nothing is lost without it
   }

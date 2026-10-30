@@ -1,9 +1,11 @@
-// The one place that talks to the browser's tabs. 0.2 swaps in webextension-polyfill here for Firefox.
+// The one place that talks to the browser's tabs and permissions.
+// webextension-polyfill gives the same promise API in Chrome and Firefox.
+import browser, { type Tabs } from 'webextension-polyfill';
 
 /** The tab the person is looking at, in the window this drawer belongs to. */
-export async function activeTab(): Promise<chrome.tabs.Tab | undefined> {
-  const win = await chrome.windows.getCurrent();
-  const [tab] = await chrome.tabs.query({ active: true, windowId: win.id });
+export async function activeTab(): Promise<Tabs.Tab | undefined> {
+  const win = await browser.windows.getCurrent();
+  const [tab] = await browser.tabs.query({ active: true, windowId: win.id });
   return tab;
 }
 
@@ -15,13 +17,13 @@ export function isOpenable(url: string): boolean {
 /** Opens an address in the current tab, under the drawer. Never a new window. */
 export async function openHere(url: string): Promise<void> {
   const tab = await activeTab();
-  if (tab?.id != null) await chrome.tabs.update(tab.id, { url });
-  else await chrome.tabs.create({ url });
+  if (tab?.id != null) await browser.tabs.update(tab.id, { url });
+  else await browser.tabs.create({ url });
 }
 
 /** The id of the window this drawer belongs to. */
 export async function ownWindowId(): Promise<number | undefined> {
-  const win = await chrome.windows.getCurrent();
+  const win = await browser.windows.getCurrent();
   return win.id;
 }
 
@@ -35,7 +37,8 @@ export async function fetchText(url: string): Promise<string> {
   } catch {
     throw new Error('That is not an http or https address.');
   }
-  const granted = await chrome.permissions.request({ origins: [origin] });
+  // Called before any await, so it still counts as the person's click.
+  const granted = await browser.permissions.request({ origins: [origin] });
   if (!granted) throw new Error(`No permission to read ${origin.slice(0, -2)}.`);
   let res: Response;
   try {
@@ -47,4 +50,4 @@ export async function fetchText(url: string): Promise<string> {
   return res.text();
 }
 
-export const version: string = chrome.runtime.getManifest().version;
+export const version: string = browser.runtime.getManifest().version;

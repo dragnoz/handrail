@@ -8,13 +8,21 @@ When you have to do something complex on the web, the instructions live in one w
 
 It is not an assistant and not an automation tool. The guide is written elsewhere, by a person or by an assistant. Handrail is the rail you hold while you walk it. There is no account, no server and no telemetry. Nothing leaves the browser.
 
-## Install (Chrome, 0.1)
+## Install
 
-1. Get `dist/`: download the latest `handrail-chrome` zip from the Actions tab and unpack it, or build it (`pnpm install && pnpm build`).
-2. Open `chrome://extensions`, turn on **Developer mode**, press **Load unpacked** and choose the `dist` folder.
-3. Press the Handrail button in the toolbar. The drawer opens at the side.
+Get the build: download the latest `handrail-chrome` or `handrail-firefox` zip from the Actions tab and unpack it, or build both with `pnpm install && pnpm build` (`dist/` for Chrome, `dist-firefox/` for Firefox).
 
-Firefox comes in 0.2 from the same code. Stores come in 0.4.
+**Chrome**
+
+1. Open `chrome://extensions`, turn on **Developer mode**, press **Load unpacked** and choose the `dist` folder.
+2. Press the Handrail button in the toolbar. The drawer opens at the side.
+
+**Firefox** (142 or newer)
+
+1. Open `about:debugging#/runtime/this-firefox`, press **Load Temporary Add-on…** and choose `manifest.json` inside the `dist-firefox` folder. A temporary add-on is gone when Firefox closes; a signed build that stays comes with the store listing in 0.4.
+2. Press the Handrail button in the toolbar, or open the sidebar (`Ctrl+B` / `Cmd+B` shows sidebars; pick Handrail). The drawer opens at the side.
+
+Stores come in 0.4.
 
 ## Use
 
@@ -64,21 +72,22 @@ The whole contract, with the JSON form and feeds, is in [docs/guide-format.md](d
 | permission | why |
 |---|---|
 | `storage` | your guides, progress and settings stay in the browser |
-| `sidePanel` | the drawer |
-| `tabs` | the address of the tab you are on, for "where am I" and "open here". Chrome words this as "read your browsing history"; Handrail reads the active tab's address and records nothing. |
+| `sidePanel` (Chrome) | the drawer. Firefox uses its sidebar for this and needs no permission. |
+| `tabs` | the address of the tab you are on, for "where am I" and "open here". Chrome words this as "read your browsing history", Firefox as "access browser tabs"; Handrail reads the active tab's address and records nothing. |
 | one site, when you add a guide by link | fetching that file; asked for at that moment, for that site only |
 
-No `<all_urls>`, no content scripts in 0.1, no remote code.
+No `<all_urls>`, no content scripts yet, no remote code, no data collected.
 
 ## Develop
 
 ```
 pnpm install
-pnpm build        # dist/
-pnpm test         # parser and matcher, against docs/guide-format.md
-pnpm test:e2e     # the drawer in Chromium
-pnpm screenshot   # README pictures
-pnpm zip          # release/handrail-chrome-<version>.zip
+pnpm build          # dist/ (Chrome) and dist-firefox/ (Firefox)
+pnpm test           # parser and matcher, against docs/guide-format.md
+pnpm test:e2e       # the drawer in Chromium
+pnpm lint:firefox   # web-ext lint on the Firefox build
+pnpm screenshot     # README pictures
+pnpm zip            # release/handrail-<browser>-<version>.zip
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the layout and the rules. Every change is one line in [CHANGELOG.md](CHANGELOG.md).
@@ -87,8 +96,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the layout and the rules. Every chang
 
 | version | brings |
 |---|---|
-| 0.1 | Chrome side panel; paste, link and file guides; the parser; one step at a time; chips; keys; open here; where am I; export and import |
-| 0.2 | Firefox sidebar from the same code; feeds; notes back to a file, the clipboard, a webhook or mail |
+| 0.1 | Chrome side panel; paste, link and file guides; the parser; one step at a time; chips; keys; open here; where am I; export and import. 0.1.1 added the Firefox sidebar from the same code |
+| 0.2 | Feeds; notes back to a file, the clipboard, a webhook or mail |
 | 0.3 | Pointing at the page: outline the button a step names, per-site permission |
 | 0.4 | Store listings, docs, a feed example |
 

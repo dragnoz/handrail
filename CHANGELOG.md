@@ -2,6 +2,13 @@
 
 One line per change, per version.
 
+## 0.1.1 — 2026-10-30
+
+- Firefox: the sidebar from the same code (`pnpm build` makes `dist/` for Chrome and `dist-firefox/` for Firefox); the toolbar button toggles it.
+- The browser API goes through webextension-polyfill in both browsers.
+- Firefox manifest: `optional_permissions` for guide addresses, a gecko id, "no data collected" declared.
+- Release zips for both browsers; CI lints the Firefox build with web-ext.
+
 ## 0.1.0 — 2026-10-30
 
 - Chrome side panel: the drawer opens from the toolbar button.
