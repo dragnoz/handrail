@@ -23,14 +23,15 @@ export function manifest(target: 'chrome' | 'firefox', version: string): Record<
     // storage: guides, progress and settings stay in the browser.
     // sidePanel: the drawer itself.
     // tabs: the address of the active tab, for "where am I" and "open here".
-    base.permissions = ['storage', 'sidePanel', 'tabs'];
-    // Fetching a guide from an address asks for that one origin, when you add it.
+    // alarms: the background reads the assistants' lists every few minutes for the count on the button.
+    base.permissions = ['storage', 'sidePanel', 'tabs', 'alarms'];
+    // Fetching a guide or reaching an assistant asks for that one origin, when you add it.
     base.optional_host_permissions = ['http://*/*', 'https://*/*'];
     base.side_panel = { default_path: 'src/sidepanel/index.html' };
     base.background = { service_worker: 'assets/background.js', type: 'module' };
     base.minimum_chrome_version = '114';
   } else {
-    base.permissions = ['storage', 'tabs'];
+    base.permissions = ['storage', 'tabs', 'alarms'];
     // Firefox takes host patterns here; they are asked for per origin, the same way.
     base.optional_permissions = ['http://*/*', 'https://*/*'];
     base.sidebar_action = {
@@ -40,7 +41,8 @@ export function manifest(target: 'chrome' | 'firefox', version: string): Record<
       // Opens once, right after install: the first run needs no hunting for a button.
       open_at_install: true,
     };
-    base.background = { scripts: ['assets/background.js'] };
+    // A module, like Chrome's worker, so the background shares code with the drawer (Firefox 112+).
+    base.background = { scripts: ['assets/background.js'], type: 'module' };
     base.browser_specific_settings = {
       gecko: {
         id: 'handrail@dragnoz.github.io',

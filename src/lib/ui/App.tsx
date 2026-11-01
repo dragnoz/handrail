@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'preact/hooks';
 import { loadUi, saveUi, type UiState } from '../store';
-import { useStoredState } from './hooks';
+import { refreshNow } from '../ext';
+import { useActiveTab, useStoredState } from './hooks';
 import { Toaster } from './toast';
 import { Home } from './Home';
 import { GuideView } from './GuideView';
 import { Settings } from './Settings';
+import { Frame } from './Frame';
 
 interface Props {
   /** The drawer, or the browser's options page (settings only). */
@@ -13,11 +15,14 @@ interface Props {
 
 export function App({ mode }: Props) {
   const state = useStoredState();
+  const tab = useActiveTab();
   const [ui, setUi] = useState<UiState | null>(null);
 
   useEffect(() => {
     void loadUi().then(setUi);
-  }, []);
+    // The drawer opened: read the assistants' lists once, so new guides and notices show.
+    if (mode === 'panel') void refreshNow();
+  }, [mode]);
 
   useEffect(() => {
     if (state) document.documentElement.dataset.size = state.settings.textSize;
@@ -46,18 +51,24 @@ export function App({ mode }: Props) {
       <GuideView
         stored={stored}
         progress={state.progress[stored.guide.id]}
+        state={state}
+        tab={tab}
         onHome={() => go({ view: 'home' })}
         onSettings={() => go({ view: 'settings' })}
       />
     );
   } else if (ui.view === 'settings') {
     view = <Settings state={state} onBack={() => go({ view: 'home' })} />;
+  } else if (ui.view === 'frame' && ui.frameUrl) {
+    view = <Frame url={ui.frameUrl} title={ui.frameTitle ?? ''} onBack={() => go({ view: 'home' })} />;
   } else {
     view = (
       <Home
         state={state}
+        tab={tab}
         onOpen={(id) => go({ view: 'guide', guideId: id })}
         onSettings={() => go({ view: 'settings' })}
+        onFrame={(url, title) => go({ view: 'frame', frameUrl: url, frameTitle: title })}
       />
     );
   }

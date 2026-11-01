@@ -1,0 +1,16 @@
+[
+  {
+    "id": "add-deploy-key",
+    "title": "Add a deploy key to a repository",
+    "url": "guides/add-deploy-key.md",
+    "updated": "2026-10-30T10:00:00Z",
+    "for": "Dragnoz",
+    "pages": ["https://git.example.org/*"]
+  },
+  {
+    "id": "reset-the-router",
+    "title": "Reset the router",
+    "url": "guides/reset-the-router.md",
+    "updated": "2026-10-29T18:30:00Z"
+  }
+]

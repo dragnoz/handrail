@@ -2,6 +2,20 @@
 
 One line per change, per version.
 
+## 0.2.0 — 2026-11-01
+
+- Assistants: add one in Settings by address, with a key if it wants one; it lists guides, takes asks and notes, and posts notices. The contract is docs/assistant.md; anyone can be one.
+- Ask: say what you want to do; the assistant writes the guide and it shows up in your list.
+- Notes back under every step: to the clipboard, a file, your mail program, a webhook or an assistant. Text that looks like a key or a password is refused.
+- "There is a guide for this page": offered when the tab matches a listed guide's pages. Never opened by itself.
+- Notices from an assistant, with a count on the toolbar button; the background reads the lists every five minutes (new `alarms` permission). Off in Settings.
+- An assistant's own page inside the drawer when its headers allow a frame; in the tab otherwise.
+- Sent: asks and notes with what came back, and send again, in Settings.
+- Export leaves the assistants' keys out.
+- Two example assistants in examples/: a static folder, and a Node script that turns a folder into one.
+- guides/add-an-assistant.md: how to connect one, as a guide.
+- The background is an ES module in Firefox too, so it shares code with the drawer.
+
 ## 0.1.4 — 2026-10-30
 
 - No internal names left: examples, guides, tests and screenshots use neutral names and example.org addresses.

@@ -1,0 +1,6 @@
+{
+  "handrail": 1,
+  "name": "Example assistant",
+  "guides": "guides.json",
+  "notices": "notices.json"
+}

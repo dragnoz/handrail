@@ -1,5 +1,6 @@
 import { useRef, useState } from 'preact/hooks';
 import { parseGuide } from '../guide';
+import { guideForPage } from '../assistant';
 import {
   freshProgress,
   now,
@@ -12,22 +13,26 @@ import {
   type StoredGuide,
 } from '../store';
 import { fetchText } from '../ext';
-import { message } from './hooks';
+import { message, type ActiveTab } from './hooks';
 import { toast } from './toast';
+import { addGuideFrom, Assistants } from './Assistants';
 
 interface Props {
   state: State;
+  tab: ActiveTab;
   onOpen: (id: string) => void;
   onSettings: () => void;
+  onFrame: (url: string, title: string) => void;
 }
 
-/** Home: the guides you have, newest first, and a box to add one. */
-export function Home({ state, onOpen, onSettings }: Props) {
+/** Home: a box to add a guide, the guides you have, newest first, and your assistants. */
+export function Home({ state, tab, onOpen, onSettings, onFrame }: Props) {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [dragging, setDragging] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null);
+  const [dismissedOffer, setDismissedOffer] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
 
   async function addText(raw: string, source: GuideSource): Promise<void> {
@@ -95,6 +100,25 @@ export function Home({ state, onOpen, onSettings }: Props) {
     if (dropped) setText(dropped);
   }
 
+  // "There is a guide for this page": an assistant lists a guide whose pages match the tab.
+  const offer = guideForPage(Object.values(state.assistants), tab.url);
+  const offerKey = offer ? `${offer.entry.id}|${tab.url ?? ''}` : '';
+  const showOffer = !!offer && dismissedOffer !== offerKey;
+
+  async function takeOffer(): Promise<void> {
+    if (!offer) return;
+    setBusy(true);
+    setError('');
+    try {
+      const id = await addGuideFrom(state, offer.assistant, offer.entry.url, offer.entry);
+      onOpen(id);
+    } catch (e) {
+      setError(message(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const guides = Object.values(state.guides).sort((a, b) => b.updated.localeCompare(a.updated));
 
   return (
@@ -116,6 +140,20 @@ export function Home({ state, onOpen, onSettings }: Props) {
           ⚙
         </button>
       </header>
+
+      {showOffer && offer && (
+        <div class="where" role="status">
+          <span>
+            There is a guide for this page: <b>{offer.entry.title}</b>.
+          </span>
+          <button class="btn btn-primary" onClick={() => void takeOffer()} disabled={busy}>
+            Open it
+          </button>
+          <button class="btn btn-quiet" onClick={() => setDismissedOffer(offerKey)}>
+            Not now
+          </button>
+        </div>
+      )}
 
       <label class="visually-hidden" for="paste">
         Paste a guide, or a link to one
@@ -166,7 +204,7 @@ export function Home({ state, onOpen, onSettings }: Props) {
               <button class="open-guide" onClick={() => onOpen(g.guide.id)}>
                 <div class="name">{g.guide.title}</div>
                 <div class="line">
-                  <span>{byLine(g)}</span>
+                  <span>{byLine(g, state)}</span>
                   <span class={isFinished(p, n) ? 'state finished' : 'state'}>{progressText(p, n)}</span>
                 </div>
               </button>
@@ -197,16 +235,29 @@ export function Home({ state, onOpen, onSettings }: Props) {
           );
         })}
       </ul>
+
+      <Assistants state={state} tab={tab} onOpen={onOpen} onFrame={onFrame} />
+      {Object.keys(state.assistants).length === 0 && (
+        <p class="hint">
+          An assistant can send guides here.{' '}
+          <button class="link" onClick={onSettings}>
+            Add one in Settings.
+          </button>
+        </p>
+      )}
     </div>
   );
 }
 
-function byLine(g: StoredGuide): string {
+function byLine(g: StoredGuide, state: State): string {
   const parts: string[] = [];
   if (g.guide.by) parts.push(`by ${g.guide.by}`);
   if (g.source.kind === 'file' && g.source.name) parts.push(`from ${g.source.name}`);
   else if (g.source.kind === 'url' && g.source.url) parts.push(`from ${hostOf(g.source.url)}`);
-  else parts.push('pasted');
+  else if (g.source.kind === 'assistant') {
+    const a = g.source.assistant ? state.assistants[g.source.assistant] : undefined;
+    parts.push(`from ${a?.card.name ?? 'an assistant'}`);
+  } else parts.push('pasted');
   return parts.join(' · ');
 }
 

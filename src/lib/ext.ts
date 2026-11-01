@@ -1,4 +1,4 @@
-// The one place that talks to the browser's tabs and permissions.
+// The one place that talks to the browser's tabs, permissions and the background.
 // webextension-polyfill gives the same promise API in Chrome and Firefox.
 import browser, { type Tabs } from 'webextension-polyfill';
 
@@ -27,19 +27,37 @@ export async function ownWindowId(): Promise<number | undefined> {
   return win.id;
 }
 
-/** Asks the browser for permission to read one origin, then fetches text from it. */
-export async function fetchText(url: string): Promise<string> {
-  let origin: string;
+/** The origin pattern for an http(s) address, or a plain error. */
+export function originOf(url: string): string {
   try {
     const u = new URL(url);
     if (u.protocol !== 'http:' && u.protocol !== 'https:') throw new Error();
-    origin = `${u.protocol}//${u.host}/*`;
+    return `${u.protocol}//${u.host}/*`;
   } catch {
     throw new Error('That is not an http or https address.');
   }
-  // Called before any await, so it still counts as the person's click.
+}
+
+/**
+ * Asks the browser for permission to reach one origin, with its prompt. Call it first thing in a
+ * click handler, before any other await, so the browser still counts it as the person's click.
+ */
+export async function requestOrigin(url: string): Promise<void> {
+  const origin = originOf(url);
   const granted = await browser.permissions.request({ origins: [origin] });
-  if (!granted) throw new Error(`No permission to read ${origin.slice(0, -2)}.`);
+  if (!granted) throw new Error(`No permission to reach ${origin.slice(0, -2)}.`);
+}
+
+/** Makes sure an origin may be reached: no prompt when it already may (an assistant's own origin). */
+export async function ensureOrigin(url: string): Promise<void> {
+  const origin = originOf(url);
+  if (await browser.permissions.contains({ origins: [origin] })) return;
+  await requestOrigin(url);
+}
+
+/** Asks the browser for permission to read one origin, then fetches text from it. */
+export async function fetchText(url: string): Promise<string> {
+  await requestOrigin(url);
   let res: Response;
   try {
     res = await fetch(url, { credentials: 'omit', cache: 'no-store' });
@@ -48,6 +66,36 @@ export async function fetchText(url: string): Promise<string> {
   }
   if (!res.ok) throw new Error(`That address answered ${res.status}.`);
   return res.text();
+}
+
+/**
+ * Can this page be shown inside the drawer? Looks at the headers only; the page itself is not read.
+ * Needs permission for the origin, which an assistant's address already has.
+ */
+export async function frameable(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, { method: 'HEAD', credentials: 'omit', cache: 'no-store', redirect: 'follow' });
+    const xfo = (res.headers.get('x-frame-options') ?? '').toLowerCase();
+    if (xfo.includes('deny') || xfo.includes('sameorigin')) return false;
+    const csp = (res.headers.get('content-security-policy') ?? '').toLowerCase();
+    const m = /frame-ancestors([^;]*)/.exec(csp);
+    if (m) {
+      const sources = m[1]!.trim();
+      return sources.includes('*') || sources.includes(location.origin) || sources.includes('chrome-extension:') || sources.includes('moz-extension:');
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Asks the background to read the assistants' lists now. Resolves when it is done. */
+export async function refreshNow(id?: string): Promise<void> {
+  try {
+    await browser.runtime.sendMessage({ type: 'refresh', id });
+  } catch {
+    // no background awake (an old browser, a test page): the drawer shows what it has
+  }
 }
 
 export const version: string = browser.runtime.getManifest().version;

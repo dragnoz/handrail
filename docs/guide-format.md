@@ -156,14 +156,6 @@ The parser turns Markdown into exactly this shape, and a guide may arrive as JSO
 
 In JSON, `url`, `copy`, `target` and `sources` may be a single string instead of a list. Missing fields are filled with their empty value. `expect`, `image` and `note` are left out when empty.
 
-## Feeds (0.2)
+## Feeds
 
-A feed is a JSON list at an address:
-
-```json
-[
-  { "id": "add-deploy-key", "title": "Add a deploy key to a repository", "url": "https://example.org/guides/add-deploy-key.md", "updated": "2026-10-30T10:00:00Z", "for": "Dragnoz", "done": false }
-]
-```
-
-The drawer lists a feed's guides newest first and fetches a guide when it is opened. A feed may need a header (a bearer token the person pastes into the feed's settings); the token is kept locally and sent only to that feed's origin.
+A list of guides at an address is part of being an **assistant**: one address answers a small card that points at the list, and the list is lines of `{ id, title, url, updated, for, pages }`. The whole contract, with asks, notes back and notices, is in [assistant.md](assistant.md).

@@ -1,20 +1,23 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { whereAmI, type Step } from '../guide';
-import { freshProgress, now, setProgress, type Progress, type StoredGuide } from '../store';
+import { freshProgress, now, setProgress, type Progress, type State, type StoredGuide } from '../store';
 import { isOpenable, openHere } from '../ext';
-import { useActiveTab } from './hooks';
+import type { ActiveTab } from './hooks';
 import { Markdown } from './Markdown';
+import { NotesBox } from './NotesBox';
 import { toast } from './toast';
 
 interface Props {
   stored: StoredGuide;
   progress: Progress | undefined;
+  state: State;
+  tab: ActiveTab;
   onHome: () => void;
   onSettings: () => void;
 }
 
 /** One guide: the open step, done steps folded above it, the rest listed below. */
-export function GuideView({ stored, progress, onHome, onSettings }: Props) {
+export function GuideView({ stored, progress, state, tab, onHome, onSettings }: Props) {
   const guide = stored.guide;
   const n = guide.steps.length;
   const p = progress ?? freshProgress();
@@ -24,7 +27,6 @@ export function GuideView({ stored, progress, onHome, onSettings }: Props) {
   const doneCount = p.done.filter((i) => i < n).length;
   const skippedCount = p.skipped.filter((i) => i < n).length;
 
-  const tab = useActiveTab();
   const suggestion = finished ? null : whereAmI(guide, current, tab.url);
   const suggestionKey = suggestion != null ? `${suggestion}|${tab.url ?? ''}` : '';
   const [dismissed, setDismissed] = useState('');
@@ -205,15 +207,16 @@ export function GuideView({ stored, progress, onHome, onSettings }: Props) {
                   onCopy={copyValue}
                   onOpen={open}
                 />
+                {step && <NotesBox stored={stored} step={step} index={i} state={state} tab={tab} onSettings={onSettings} />}
               </li>
             );
           }
           const done = p.done.includes(i);
           const skipped = !done && p.skipped.includes(i);
-          const state = done ? 'done' : skipped ? 'skipped' : 'later';
+          const rowState = done ? 'done' : skipped ? 'skipped' : 'later';
           return (
-            <li key={i} class={state}>
-              <button class="row" onClick={() => goTo(i)} aria-label={`${rowLabel(state)} ${i + 1}: ${s.title}`}>
+            <li key={i} class={rowState}>
+              <button class="row" onClick={() => goTo(i)} aria-label={`${rowLabel(rowState)} ${i + 1}: ${s.title}`}>
                 <span class="mark" aria-hidden="true">
                   {done ? '✓' : skipped ? '↷' : i + 1}
                 </span>

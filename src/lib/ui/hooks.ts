@@ -26,6 +26,7 @@ export function useStoredState(): State | null {
 export interface ActiveTab {
   id?: number;
   url?: string;
+  title?: string;
 }
 
 /** The tab the person is looking at, in this drawer's window. Updates as they move. */
@@ -39,12 +40,13 @@ export function useActiveTab(): ActiveTab {
       try {
         if (windowId === undefined) windowId = await ownWindowId();
         const [t] = await browser.tabs.query({ active: true, windowId });
-        const key = `${t?.id ?? ''}|${t?.url ?? ''}`;
+        const key = `${t?.id ?? ''}|${t?.url ?? ''}|${t?.title ?? ''}`;
         if (alive && key !== last) {
           last = key;
           const next: ActiveTab = {};
           if (t?.id != null) next.id = t.id;
           if (t?.url) next.url = t.url;
+          if (t?.title) next.title = t.title;
           setTab(next);
         }
       } catch {
@@ -58,7 +60,7 @@ export function useActiveTab(): ActiveTab {
     const onUpdated = (_id: number, change: Tabs.OnUpdatedChangeInfoType, t: Tabs.Tab) => {
       if (!t.active) return;
       if (windowId !== undefined && t.windowId !== windowId) return;
-      if (change.url || change.status === 'complete') void refresh();
+      if (change.url || change.title || change.status === 'complete') void refresh();
     };
     browser.tabs.onActivated.addListener(onActivated);
     browser.tabs.onUpdated.addListener(onUpdated);
