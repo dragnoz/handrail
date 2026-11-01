@@ -68,6 +68,27 @@ export async function fetchText(url: string): Promise<string> {
   return res.text();
 }
 
+/** What one probe of an address came back with. */
+export interface ProbeResult {
+  status: number;
+  text: string;
+  /** The address after redirects. */
+  url: string;
+}
+
+/**
+ * Reads one address without a permission prompt; ask for the origin first (requestOrigin).
+ * Null when the network said no. Redirects are followed, so `url` says where it ended up.
+ */
+export async function fetchProbe(url: string): Promise<ProbeResult | null> {
+  try {
+    const res = await fetch(url, { credentials: 'omit', cache: 'no-store', redirect: 'follow' });
+    return { status: res.status, text: await res.text(), url: res.url };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Can this page be shown inside the drawer? Looks at the headers only; the page itself is not read.
  * Needs permission for the origin, which an assistant's address already has.

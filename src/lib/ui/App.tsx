@@ -7,6 +7,7 @@ import { Home } from './Home';
 import { GuideView } from './GuideView';
 import { Settings } from './Settings';
 import { Frame } from './Frame';
+import { SiteCheck } from './SiteCheck';
 
 interface Props {
   /** The drawer, or the browser's options page (settings only). */
@@ -61,6 +62,15 @@ export function App({ mode }: Props) {
     view = <Settings state={state} onBack={() => go({ view: 'home' })} />;
   } else if (ui.view === 'frame' && ui.frameUrl) {
     view = <Frame url={ui.frameUrl} title={ui.frameTitle ?? ''} onBack={() => go({ view: 'home' })} />;
+  } else if (ui.view === 'sitecheck') {
+    view = (
+      <SiteCheck
+        state={state}
+        tab={tab}
+        onBack={() => go({ view: 'home' })}
+        onOpen={(id) => go({ view: 'guide', guideId: id })}
+      />
+    );
   } else {
     view = (
       <Home
@@ -69,6 +79,7 @@ export function App({ mode }: Props) {
         onOpen={(id) => go({ view: 'guide', guideId: id })}
         onSettings={() => go({ view: 'settings' })}
         onFrame={(url, title) => go({ view: 'frame', frameUrl: url, frameTitle: title })}
+        onSiteCheck={() => go({ view: 'sitecheck' })}
       />
     );
   }

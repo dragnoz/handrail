@@ -91,7 +91,7 @@ The field block is the lines right under the step's title (blank lines before it
 | `url:` | where this step happens: an address or a pattern with `*`. Used for "where am I" and for "open here". Several lines allowed. |
 | `copy:` | a value to copy with one click. The drawer never runs it. Several allowed. Backticks around the value are removed. |
 | `expect:` | what the person should see when the step is done. |
-| `target:` | what to point at on the page (0.3): a CSS selector, or `text=...` for visible text. Several allowed, tried in order. |
+| `target:` | what to point at on the page (0.5): a CSS selector, or `text=...` for visible text. Several allowed, tried in order. |
 | `image:` | a picture for the step: an address or a data URI. |
 | `note:` | a hint for the notes-back panel (0.2): what to paste back at this step. |
 | `optional: true` | the step may be skipped. `yes`, `on` and `1` also mean true. |

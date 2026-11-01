@@ -23,10 +23,11 @@ interface Props {
   onOpen: (id: string) => void;
   onSettings: () => void;
   onFrame: (url: string, title: string) => void;
+  onSiteCheck: () => void;
 }
 
 /** Home: a box to add a guide, the guides you have, newest first, and your assistants. */
-export function Home({ state, tab, onOpen, onSettings, onFrame }: Props) {
+export function Home({ state, tab, onOpen, onSettings, onFrame, onSiteCheck }: Props) {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -193,6 +194,12 @@ export function Home({ state, tab, onOpen, onSettings, onFrame }: Props) {
       )}
       <p class="hint">Markdown or JSON. You can also drop a .md file on this panel.</p>
 
+      <div class="sc-entry">
+        <button class="btn" onClick={onSiteCheck}>
+          Check this site for signs of a break-in
+        </button>
+      </div>
+
       <h2 class="section">Your guides</h2>
       {guides.length === 0 && <p class="empty">No guides yet. Paste one above, or open a file.</p>}
       <ul class="guides">
@@ -257,7 +264,8 @@ function byLine(g: StoredGuide, state: State): string {
   else if (g.source.kind === 'assistant') {
     const a = g.source.assistant ? state.assistants[g.source.assistant] : undefined;
     parts.push(`from ${a?.card.name ?? 'an assistant'}`);
-  } else parts.push('pasted');
+  } else if (g.source.kind === 'check') parts.push('from the site check');
+  else parts.push('pasted');
   return parts.join(' · ');
 }
 

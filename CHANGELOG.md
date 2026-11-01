@@ -2,6 +2,15 @@
 
 One line per change, per version.
 
+## 0.3.0 — 2026-11-01
+
+- Site check: a button on Home reads the site you are on (or any address you type) the way any visitor could, and looks for the visible signs of a break-in: hidden off-screen spam, spam wording, scripts from odd places, machine-made account names, a login that leaves the site. Runs only when pressed; asks for that one site; sends nothing anywhere.
+- A bad result offers "Walk me through the cleanup": the guide is written for that site, so every step opens the right page there.
+- guides/clean-a-hacked-site.md: the same cleanup guide, the example.org way.
+- Send a report of the findings, written for the reader you pick — a general overview, the admin, your agency, the host — to the clipboard, a file or your mail program.
+- A guide the site check wrote says "from the site check" in your list.
+- Pointing at the page moves to 0.5; the stores stay 0.4.
+
 ## 0.2.0 — 2026-11-01
 
 - Assistants: add one in Settings by address, with a key if it wants one; it lists guides, takes asks and notes, and posts notices. The contract is docs/assistant.md; anyone can be one.

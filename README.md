@@ -31,8 +31,11 @@ Stores come in 0.4.
 - **Keys**: `n` next, `p` back, `c` copy the first value, `o` open the step's address here.
 - **Open here**: a link in a step, or the step's address, opens in the tab you are on. Never a new window.
 - **Where am I**: when the tab you are on matches a later step's address, the drawer offers a jump. It never jumps by itself.
+- **Check this site**: a button on Home reads the site you are on (or any address you type) for the visible signs of a break-in: hidden off-screen spam, spam wording, scripts from odd places, machine-made account names, a login that leaves the site. A bad result offers a cleanup guide written for that site, and a report of the findings written for the reader you pick — a general overview, the admin, your agency, the host — to copy, save or email. It runs only when you press it, asks for that one site, and sends nothing anywhere by itself.
 - **Send a note back**: under every step. It goes to one place you chose in Settings: the clipboard, a file, your mail program, a webhook or an assistant. Text that looks like a key or a password is refused.
 - **Settings**: assistants, where notes go, text size, what you sent, export and import everything as one JSON file, remove everything.
+
+![The site check on example.org: a problem on the page itself, with content pushed off-screen and spam wording; a machine-made account name in the open user list; the login stays on the site; the button to walk the cleanup](docs/screenshots/0.3-sitecheck.png)
 
 ## Assistants
 
@@ -81,7 +84,7 @@ In the repository: Settings, Deploy keys, Add deploy key.
 | `image:` | a picture (address or data URI). |
 | `note:` | the hint shown in the notes box at that step. |
 | `optional: true` | the step may be skipped. |
-| `target:` | for 0.3 (pointing at the page). |
+| `target:` | for 0.5 (pointing at the page). |
 
 The whole contract, with the JSON form, is in [docs/guide-format.md](docs/guide-format.md). Example guides are in [guides/](guides/): a practice walk through the drawer, one that teaches you to write a guide, one that connects an assistant, and the one above.
 
@@ -93,7 +96,7 @@ The whole contract, with the JSON form, is in [docs/guide-format.md](docs/guide-
 | `sidePanel` (Chrome) | the drawer. Firefox uses its sidebar for this and needs no permission. |
 | `tabs` | the address and title of the tab you are on, for "where am I", "open here", the offer of a guide for the page, and the page an ask or a note carries when you tick it. Chrome words this as "read your browsing history", Firefox as "access browser tabs"; Handrail reads the active tab's address and records nothing. |
 | `alarms` | the background reads the assistants' lists every five minutes, for the count on the button |
-| one site, when you add a guide by link or an assistant by address | reaching that site; asked for at that moment, for that site only |
+| one site, when you add a guide by link, an assistant by address, or check a site | reaching that site; asked for at that moment, for that site only |
 
 No `<all_urls>`, no content scripts yet, no remote code, no data collected.
 
@@ -117,8 +120,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the layout and the rules. Every chang
 |---|---|
 | 0.1 | Chrome side panel; paste, link and file guides; the parser; one step at a time; chips; keys; open here; where am I; export and import. 0.1.1 added the Firefox sidebar from the same code |
 | 0.2 | Assistants: guides lists, asks, notes back, notices, the count on the button; the contract and two examples |
-| 0.3 | Pointing at the page: outline the button a step names, per-site permission |
+| 0.3 | Site check: the visible signs of a break-in on the site you are on, and a cleanup guide written for that site |
 | 0.4 | Store listings, docs, signed builds |
+| 0.5 | Pointing at the page: outline the button a step names, per-site permission |
 
 ## Licence
 

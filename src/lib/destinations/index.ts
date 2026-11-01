@@ -102,7 +102,7 @@ export function destinationFor(to: NotesTo): Destination {
 }
 
 /** A link that saves a file, without the downloads permission. */
-function download(name: string, body: string, type: string): void {
+export function download(name: string, body: string, type: string): void {
   const blob = new Blob([body], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

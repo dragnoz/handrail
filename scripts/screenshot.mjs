@@ -1,5 +1,5 @@
 // Loads the built extension in Chromium and takes the README pictures: the drawer with the example guide,
-// the home with an assistant open, and the notes box. The assistant is the test one on localhost, so the
+// the home with an assistant open, the notes box, and the site check. The assistant is the test one on localhost, so the
 // build used here is the test copy that already holds permission for 127.0.0.1 (see tests/e2e/dist-test.mjs).
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -72,6 +72,34 @@ await page.screenshot({ path: resolve(out, '0.2-assistant.png') });
 await row.click();
 await page.getByRole('heading', { name: 'Your guides' }).waitFor();
 await page.screenshot({ path: resolve(out, '0.1-home.png') });
+
+// 5. the site check on a site with the usual signs, answered here so no real site is read
+await page.route('https://example.org/**', (route) => {
+  const u = new URL(route.request().url());
+  if (u.pathname === '/') {
+    return route.fulfill({
+      status: 200,
+      contentType: 'text/html',
+      body: `<!doctype html><html><head><meta name="generator" content="WordPress 7.0.8"></head><body>
+<div style="position: absolute; left: -17308px;">Want gaming? <a href="https://spam.example.net">casino</a> 1xbet</div>
+<p>a theme from wp-content</p></body></html>`,
+    });
+  }
+  if (u.pathname === '/wp-json/wp/v2/users') {
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([{ slug: 'kate-austin' }, { slug: 'zwlnmi9lwnacwxozlbsybmbhscpz1wp6654' }]),
+    });
+  }
+  if (u.pathname === '/wp-login.php') return route.fulfill({ status: 200, contentType: 'text/html', body: '<form>Log in</form>' });
+  return route.fulfill({ status: 404, body: 'not found' });
+});
+await page.getByRole('button', { name: 'Check this site for signs of a break-in' }).click();
+await page.getByLabel('The site to check').fill('example.org');
+await page.getByRole('button', { name: 'Check this site', exact: true }).click();
+await page.locator('.sc-verdict').waitFor();
+await page.screenshot({ path: resolve(out, '0.3-sitecheck.png') });
 
 await context.close();
 await assistant.close();

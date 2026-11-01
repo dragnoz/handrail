@@ -126,8 +126,9 @@ handrail/
 |---|---|
 | **0.1** | Chrome side panel; paste / URL / file guides; the parser; one step at a time, chips, keys, progress; "open here"; "where am I"; state in storage; export/import. Usable by Dragnoz for the next real guide. |
 | **0.2** | Firefox sidebar from the same code; feeds (with header); notes back with file, copy, webhook, mail; history. |
-| **0.3** | Pointing at the page: selector and `text=` targets, per-site permission, graceful failure. |
+| **0.3** | Site check: the visible signs of a break-in on a site, read the way any visitor could; a cleanup guide written for that site. |
 | **0.4** | Store listings (Chrome Web Store, AMO), docs, a "write your first guide" guide, a feed example (a static JSON on any web host). |
+| **0.5** | Pointing at the page: selector and `text=` targets, per-site permission, graceful failure. |
 
 Each milestone ships with its version bump, its changelog lines, and a screenshot in the README.
 

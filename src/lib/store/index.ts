@@ -6,8 +6,8 @@ import type { Guide } from '../guide';
 import type { Assistant } from '../assistant/types';
 
 export interface GuideSource {
-  kind: 'paste' | 'url' | 'file' | 'assistant';
-  /** The address it was fetched from (kind: url or assistant). */
+  kind: 'paste' | 'url' | 'file' | 'assistant' | 'check';
+  /** The address it was fetched from (kind: url or assistant), or the site checked (kind: check). */
   url?: string;
   /** The file name (kind: file). */
   name?: string;
@@ -272,7 +272,7 @@ export function onStateChange(cb: () => void): () => void {
 // ---- the drawer's own position (which view is open), kept for the browser session only
 
 export interface UiState {
-  view: 'home' | 'guide' | 'settings' | 'frame';
+  view: 'home' | 'guide' | 'settings' | 'frame' | 'sitecheck';
   guideId?: string;
   /** The page shown in the drawer (view: frame). */
   frameUrl?: string;

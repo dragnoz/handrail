@@ -1,6 +1,7 @@
-// The build, plus permission for the test servers' origin. Chrome shows a prompt for an optional host
-// permission, which a headless test cannot press; a build that already holds http://127.0.0.1/* gets
-// no prompt. Only the test copy carries it; the real build asks, as the README says.
+// The build, plus permission for the test origins. Chrome shows a prompt for an optional host permission,
+// which a headless test cannot press; a build that already holds the origin gets no prompt. 127.0.0.1 is
+// the test servers; example.org is the site the site check test answers itself. Only the test copy carries
+// them; the real build asks, as the README says.
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -13,7 +14,7 @@ export function distForTests() {
   cpSync(src, out, { recursive: true });
   const manifestPath = resolve(out, 'manifest.json');
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-  manifest.host_permissions = ['http://127.0.0.1/*'];
+  manifest.host_permissions = ['http://127.0.0.1/*', 'https://example.org/*'];
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
   return out;
 }
