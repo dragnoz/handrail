@@ -32,6 +32,19 @@ export function whereAmI(guide: Guide, current: number, tabUrl: string | undefin
   return null;
 }
 
+/**
+ * For a list: the first item not in `exclude` (the ticked, the skipped, the open one) whose `url:` matches
+ * the tab, whichever it is. Null when none does. It only answers; the drawer never jumps by itself.
+ */
+export function whichItem(guide: Guide, tabUrl: string | undefined, exclude: number[]): number | null {
+  if (!tabUrl) return null;
+  for (let i = 0; i < guide.steps.length; i++) {
+    if (exclude.includes(i)) continue;
+    if (guide.steps[i]!.url.some((p) => urlMatches(p, tabUrl))) return i;
+  }
+  return null;
+}
+
 const ORIGIN_ONLY = /^[a-z*][a-z0-9+.*-]*:\/\/[^/]*$/i;
 
 /** Drops the fragment; a bare origin always ends in `/`; any other trailing slash is dropped. */

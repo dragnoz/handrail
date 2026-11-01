@@ -2,6 +2,13 @@
 
 One line per change, per version.
 
+## 0.3.1 — 2026-11-01
+
+- Lists: `kind: list` in the front matter makes a to-do list. Every item shows with a box, ticked in any order; one opens at a time for its details, chips and notes; `n` ticks the open item and opens the next one left; "where am I" offers any item left for the page you are on.
+- List items may be `- [ ]` boxes or plain bullets when there are no headings or numbers.
+- Add an item at the bottom of a list, in the drawer.
+- guides/go-live-checklist.md: a list, the example.
+
 ## 0.3.0 — 2026-11-01
 
 - Site check: a button on Home reads the site you are on (or any address you type) the way any visitor could, and looks for the visible signs of a break-in: hidden off-screen spam, spam wording, scripts from odd places, machine-made account names, a login that leaves the site. Runs only when pressed; asks for that one site; sends nothing anywhere.

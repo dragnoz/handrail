@@ -5,6 +5,7 @@ import { useActiveTab, useStoredState } from './hooks';
 import { Toaster } from './toast';
 import { Home } from './Home';
 import { GuideView } from './GuideView';
+import { ListView } from './ListView';
 import { Settings } from './Settings';
 import { Frame } from './Frame';
 import { SiteCheck } from './SiteCheck';
@@ -48,8 +49,9 @@ export function App({ mode }: Props) {
   const stored = ui.view === 'guide' && ui.guideId ? state.guides[ui.guideId] : undefined;
   let view;
   if (stored) {
+    const View = stored.guide.kind === 'list' ? ListView : GuideView;
     view = (
-      <GuideView
+      <View
         stored={stored}
         progress={state.progress[stored.guide.id]}
         state={state}

@@ -212,7 +212,7 @@ export function Home({ state, tab, onOpen, onSettings, onFrame, onSiteCheck }: P
                 <div class="name">{g.guide.title}</div>
                 <div class="line">
                   <span>{byLine(g, state)}</span>
-                  <span class={isFinished(p, n) ? 'state finished' : 'state'}>{progressText(p, n)}</span>
+                  <span class={isFinished(p, n) ? 'state finished' : 'state'}>{progressText(p, n, g.guide.kind === 'list' ? 'items' : 'steps')}</span>
                 </div>
               </button>
               <div class="tools">
@@ -258,6 +258,7 @@ export function Home({ state, tab, onOpen, onSettings, onFrame, onSiteCheck }: P
 
 function byLine(g: StoredGuide, state: State): string {
   const parts: string[] = [];
+  if (g.guide.kind === 'list') parts.push('a list');
   if (g.guide.by) parts.push(`by ${g.guide.by}`);
   if (g.source.kind === 'file' && g.source.name) parts.push(`from ${g.source.name}`);
   else if (g.source.kind === 'url' && g.source.url) parts.push(`from ${hostOf(g.source.url)}`);
@@ -278,11 +279,11 @@ function hostOf(url: string): string {
 }
 
 export function isFinished(p: Progress | undefined, n: number): boolean {
-  return !!p && p.current >= n && n > 0;
+  return !!p && n > 0 && (p.current >= n || !!p.finished);
 }
 
-export function progressText(p: Progress | undefined, n: number): string {
-  if (!p || (p.done.length === 0 && p.skipped.length === 0 && p.current === 0)) return `${n} steps`;
+export function progressText(p: Progress | undefined, n: number, unit: 'steps' | 'items' = 'steps'): string {
+  if (!p || (p.done.length === 0 && p.skipped.length === 0 && p.current <= 0)) return `${n} ${unit}`;
   if (isFinished(p, n)) return 'Done';
   return `${p.done.length} of ${n} done`;
 }

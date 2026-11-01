@@ -85,6 +85,51 @@ describe('the list example', () => {
   });
 });
 
+describe('the to-do list example (todo)', () => {
+  const g = parseGuide(example('todo'));
+
+  it('is a list of five items', () => {
+    expect(g.kind).toBe('list');
+    expect(g.title).toBe('Before the site goes live');
+    expect(g.id).toBe('before-the-site-goes-live');
+    expect(g.intro).toBe('Once each. Tick them in any order.');
+    expect(g.steps.map((s) => s.title)).toEqual([
+      'Point the domain at the server',
+      'Turn on HTTPS',
+      'Nightly backups, kept 30 days',
+      'Two-factor login for every admin',
+      'Try it on a phone',
+    ]);
+  });
+
+  it('reads the fields under a box', () => {
+    expect(g.steps[0]!.url).toEqual(['https://dns.example.org/*']);
+    expect(g.steps[0]!.expect).toBe('the site opens at its own name within an hour');
+    expect(g.steps[0]!.body).toBe('');
+    expect(g.steps[2]!.note).toBe('where the backups land');
+    expect(g.steps[4]!.optional).toBe(true);
+  });
+
+  it('keeps kind through JSON', () => {
+    expect(toJson(g).kind).toBe('list');
+    expect(fromJson(toJson(g))).toEqual(g);
+    expect(fromJson({ title: 'T', kind: 'list', steps: [{ title: 'A' }] }).kind).toBe('list');
+  });
+
+  it('without kind, bullets are not steps, and a step guide has no kind', () => {
+    expect(() => parseGuide('# T\n- a\n- b\n')).toThrow(/No steps found/);
+    expect(parseGuide(example('deploy-key')).kind).toBeUndefined();
+    expect(toJson(parseGuide(example('deploy-key')))).not.toHaveProperty('kind');
+  });
+
+  it('in a list, headings win over numbers and numbers over bullets; any bullet mark works', () => {
+    expect(parseGuide('---\nkind: list\n---\n## A\n- not an item\n').steps.map((s) => s.title)).toEqual(['A']);
+    expect(parseGuide('---\nkind: list\n---\n1. A\n- not an item\n').steps.map((s) => s.title)).toEqual(['A']);
+    expect(parseGuide('---\nkind: list\n---\n* A\n- [x] B\n+ C\n').steps.map((s) => s.title)).toEqual(['A', 'B', 'C']);
+    expect(() => parseGuide('---\nkind: list\n---\nnothing\n')).toThrow(/No items found/);
+  });
+});
+
 describe('the rules', () => {
   it('headings win when both headings and a list appear', () => {
     const g = parseGuide('## A\n1. not a step\n2. nor this\n## B\n');

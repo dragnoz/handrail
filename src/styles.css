@@ -1164,3 +1164,81 @@ h3.sub {
 .sc-report .add-row {
   margin-top: 8px;
 }
+
+/* ---- lists (0.3.1) ---- */
+
+.item-row {
+  align-items: center;
+  cursor: default;
+}
+.item-row:hover {
+  border-color: transparent;
+}
+
+.tick {
+  flex: 0 0 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1.5px solid var(--muted);
+  border-radius: 0.35rem;
+  background: var(--card);
+  color: var(--done);
+  font-weight: 700;
+  cursor: pointer;
+}
+li.done .tick {
+  border-color: var(--done);
+  background: var(--soft);
+}
+li.skipped .tick {
+  color: var(--muted);
+}
+
+.item-title {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.2rem 0.4rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.item-title:hover {
+  background: var(--soft);
+}
+li.done .item-title {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--line);
+}
+li.skipped .item-title {
+  color: var(--muted);
+}
+
+ol.steps.list li.open > .card {
+  margin-left: 2.1rem;
+}
+
+.add-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.add-item input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+}

@@ -8,6 +8,7 @@ const FIELD = /^(?:[ ]{2,}|\t+)([A-Za-z][\w-]*):(?:[ \t]+(.*)|[ \t]*)$/;
 const H1 = /^#(?!#)[ \t]+(.*?)[ \t]*#*[ \t]*$/;
 const H2 = /^##(?!#)[ \t]+(.*?)[ \t]*#*[ \t]*$/;
 const ITEM = /^(\d+)[.)][ \t]+(.*)$/;
+const BULLET = /^[-*+][ \t]+(?:\[[ xX]\][ \t]+)?(.*)$/;
 const FENCE = /^[ ]{0,3}(`{3,}|~{3,})/;
 
 /** Markdown (or the JSON form) -> a Guide. Throws GuideError when there is nothing to walk. */
@@ -26,12 +27,17 @@ export function parseGuide(text: string): Guide {
   }
 
   const { meta, body } = splitFrontMatter(src);
+  const isList = str(meta.kind).toLowerCase() === 'list';
   const lines = body.split('\n');
-  const mode = detectMode(lines);
+  const mode = detectMode(lines, isList);
   if (!mode) {
-    throw new GuideError('No steps found. Steps are "## " headings or a numbered list (1. 2. 3.).');
+    throw new GuideError(
+      isList
+        ? 'No items found. Items are "## " headings, a numbered list, or "- " lines.'
+        : 'No steps found. Steps are "## " headings or a numbered list (1. 2. 3.).',
+    );
   }
-  const parsed = collect(lines, mode === 'headings' ? H2 : ITEM, mode === 'list');
+  const parsed = collect(lines, mode === 'headings' ? H2 : mode === 'list' ? ITEM : BULLET, mode !== 'headings');
   const title = str(meta.title) || parsed.title || parsed.steps[0]?.title || 'Untitled guide';
   const guide: Guide = {
     id: str(meta.id) || slug(title),
@@ -43,6 +49,7 @@ export function parseGuide(text: string): Guide {
   if (str(meta.by)) guide.by = str(meta.by);
   if (str(meta.for)) guide.for = str(meta.for);
   if (str(meta.version)) guide.version = str(meta.version);
+  if (isList) guide.kind = 'list';
   return guide;
 }
 
@@ -79,6 +86,7 @@ export function fromJson(input: unknown): Guide {
   if (str(o.by)) guide.by = str(o.by);
   if (str(o.for)) guide.for = str(o.for);
   if (str(o.version)) guide.version = str(o.version);
+  if (str(o.kind).toLowerCase() === 'list') guide.kind = 'list';
   return guide;
 }
 
@@ -153,9 +161,11 @@ function unquote(v: string): string {
   return t.length >= 2 && (dq || sq) ? t.slice(1, -1) : t;
 }
 
-function detectMode(lines: string[]): 'headings' | 'list' | null {
+/** Which lines are the steps. Bullets count only in a list (`kind: list`). */
+function detectMode(lines: string[], bullets: boolean): 'headings' | 'list' | 'bullets' | null {
   let fence = false;
   let hasList = false;
+  let hasBullet = false;
   for (const line of lines) {
     if (FENCE.test(line)) {
       fence = !fence;
@@ -164,8 +174,9 @@ function detectMode(lines: string[]): 'headings' | 'list' | null {
     if (fence) continue;
     if (H2.test(line)) return 'headings';
     if (ITEM.test(line)) hasList = true;
+    else if (BULLET.test(line)) hasBullet = true;
   }
-  return hasList ? 'list' : null;
+  return hasList ? 'list' : bullets && hasBullet ? 'bullets' : null;
 }
 
 interface Parsed {

@@ -192,3 +192,53 @@ test('a text without steps is refused in plain words', async ({ panel }) => {
   await addGuide(panel, 'Just a paragraph, no steps.');
   await expect(panel.getByRole('alert')).toContainText('No steps found');
 });
+
+test('a list: ticked in any order, n ticks and moves on, an item added, all done', async ({ panel }) => {
+  await addGuide(
+    panel,
+    [
+      '---',
+      'title: Moving day',
+      'kind: list',
+      '---',
+      'Tick in any order.',
+      '- [ ] Pack the kitchen',
+      '      copy: boxes 1-4',
+      '- [ ] Call the movers',
+      '- [ ] Return the keys',
+      '      optional: true',
+    ].join('\n'),
+  );
+  await expect(panel.getByRole('heading', { level: 1 })).toHaveText('Moving day');
+  await expect(panel.getByText('0 of 3 done')).toBeVisible();
+  // the first item is open, with its chip
+  await expect(panel.getByRole('button', { name: 'Copy: boxes 1-4' })).toBeVisible();
+
+  // the last one first
+  await panel.getByRole('checkbox', { name: 'Done: Return the keys' }).click();
+  await expect(panel.getByText('1 of 3 done')).toBeVisible();
+
+  // n ticks the open item and opens the next one left
+  await panel.keyboard.press('n');
+  await expect(panel.getByText('2 of 3 done')).toBeVisible();
+  await expect(panel.getByRole('button', { name: 'Call the movers', expanded: true })).toBeVisible();
+
+  // a tick comes off again
+  await panel.getByRole('checkbox', { name: 'Done: Return the keys' }).click();
+  await expect(panel.getByText('1 of 3 done')).toBeVisible();
+
+  // one more item
+  await panel.getByLabel('A new item').fill('Change the address at the bank');
+  await panel.getByRole('button', { name: 'Add', exact: true }).click();
+  await expect(panel.getByText('1 of 4 done')).toBeVisible();
+  await expect(panel.getByRole('checkbox', { name: 'Done: Change the address at the bank' })).toBeVisible();
+
+  await panel.getByRole('checkbox', { name: 'Done: Call the movers' }).click();
+  await panel.getByRole('checkbox', { name: 'Done: Return the keys' }).click();
+  await panel.getByRole('checkbox', { name: 'Done: Change the address at the bank' }).click();
+  await expect(panel.getByText('All done.')).toBeVisible();
+
+  await panel.getByRole('button', { name: 'Your guides' }).click();
+  await expect(panel.getByText('Done', { exact: true })).toBeVisible();
+  await expect(panel.getByText('a list')).toBeVisible();
+});

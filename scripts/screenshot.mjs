@@ -1,5 +1,5 @@
 // Loads the built extension in Chromium and takes the README pictures: the drawer with the example guide,
-// the home with an assistant open, the notes box, and the site check. The assistant is the test one on localhost, so the
+// the home with an assistant open, the notes box, the site check and a list. The assistant is the test one on localhost, so the
 // build used here is the test copy that already holds permission for 127.0.0.1 (see tests/e2e/dist-test.mjs).
 import { chromium } from '@playwright/test';
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -100,6 +100,16 @@ await page.getByLabel('The site to check').fill('example.org');
 await page.getByRole('button', { name: 'Check this site', exact: true }).click();
 await page.locator('.sc-verdict').waitFor();
 await page.screenshot({ path: resolve(out, '0.3-sitecheck.png') });
+
+// 6. a list, two items ticked, the first open
+await page.getByRole('button', { name: 'Back' }).click();
+await page.getByLabel('Paste a guide, or a link to one').fill(readFileSync(resolve('guides/go-live-checklist.md'), 'utf8'));
+await page.getByRole('button', { name: 'Add guide' }).click();
+await page.getByRole('heading', { level: 1, name: 'Before the site goes live' }).waitFor();
+await page.getByRole('checkbox', { name: 'Done: Turn on HTTPS, and send http to https' }).click();
+await page.getByRole('checkbox', { name: 'Done: Two-factor login for every admin account' }).click();
+await page.waitForTimeout(2300);
+await page.screenshot({ path: resolve(out, '0.3-list.png') });
 
 await context.close();
 await assistant.close();

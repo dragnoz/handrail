@@ -28,6 +28,7 @@ Stores come in 0.4.
 
 - **Add a guide**: paste its text into the box at the top, or paste a link to a `.md` file (Handrail asks for that one site), or open a file, or drop a `.md` on the panel.
 - **Walk it**: the open step shows its title, body, chips for values to copy, what you should see, and a picture. **Next**, **Back**, **Skip** on optional steps, **Done** on the last. Done steps fold to a ticked line; click one to reopen it.
+- **Lists**: a guide with `kind: list` is a to-do list: every item with a box, ticked in any order, one open at a time for its details and notes; `n` ticks the open one and moves on; add an item at the bottom. Ask an assistant for "a Handrail to-do list" and that is what it writes.
 - **Keys**: `n` next, `p` back, `c` copy the first value, `o` open the step's address here.
 - **Open here**: a link in a step, or the step's address, opens in the tab you are on. Never a new window.
 - **Where am I**: when the tab you are on matches a later step's address, the drawer offers a jump. It never jumps by itself.
@@ -36,6 +37,8 @@ Stores come in 0.4.
 - **Settings**: assistants, where notes go, text size, what you sent, export and import everything as one JSON file, remove everything.
 
 ![The site check on example.org: a problem on the page itself, with content pushed off-screen and spam wording; a machine-made account name in the open user list; the login stays on the site; the button to walk the cleanup](docs/screenshots/0.3-sitecheck.png)
+
+![A list: seven items with boxes, two ticked, the first open with its address to open and what to expect, and the line to add an item](docs/screenshots/0.3-list.png)
 
 ## Assistants
 
@@ -55,7 +58,7 @@ Anyone can be an assistant. The whole contract is one short document, [docs/assi
 
 ## The guide format
 
-A guide is Markdown. Steps are the `## ` headings (or a numbered list). Fields sit in an indented block right under a step.
+A guide is Markdown. Steps are the `## ` headings (or a numbered list). Fields sit in an indented block right under a step. Front matter `kind: list` makes it a to-do list, ticked in any order, with `- [ ]` items if you like.
 
 ```markdown
 ---
@@ -86,7 +89,7 @@ In the repository: Settings, Deploy keys, Add deploy key.
 | `optional: true` | the step may be skipped. |
 | `target:` | for 0.5 (pointing at the page). |
 
-The whole contract, with the JSON form, is in [docs/guide-format.md](docs/guide-format.md). Example guides are in [guides/](guides/): a practice walk through the drawer, one that teaches you to write a guide, one that connects an assistant, and the one above.
+The whole contract, with the JSON form, is in [docs/guide-format.md](docs/guide-format.md). Example guides are in [guides/](guides/): a practice walk through the drawer, one that teaches you to write a guide, one that connects an assistant, a go-live checklist as a list, and the one above.
 
 ## Permissions, and why
 
@@ -120,7 +123,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the layout and the rules. Every chang
 |---|---|
 | 0.1 | Chrome side panel; paste, link and file guides; the parser; one step at a time; chips; keys; open here; where am I; export and import. 0.1.1 added the Firefox sidebar from the same code |
 | 0.2 | Assistants: guides lists, asks, notes back, notices, the count on the button; the contract and two examples |
-| 0.3 | Site check: the visible signs of a break-in on the site you are on, and a cleanup guide written for that site |
+| 0.3 | Site check: the visible signs of a break-in on the site you are on, and a cleanup guide written for that site. 0.3.1 added lists |
 | 0.4 | Store listings, docs, signed builds |
 | 0.5 | Pointing at the page: outline the button a step names, per-site permission |
 

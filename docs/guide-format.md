@@ -72,6 +72,7 @@ Takes two minutes. Nothing is lost.
 | `by` | who wrote it |
 | `for` | who it is for |
 | `version` | the guide's own version, any text |
+| `kind` | `list` makes the guide a to-do list: every item shown, ticked in any order. Without it, the guide is steps, walked in order. |
 | `sources` | where it came from: one address, a `[a, b]` list, or `- item` lines |
 
 Values may be quoted or not. Other keys are ignored.
@@ -81,6 +82,34 @@ Values may be quoted or not. Other keys are ignored.
 - A step's title is the heading text or the list item's first line. A leading number is dropped: `## 1. Open a terminal` and `## Step 1: Open a terminal` both give **Open a terminal**.
 - Headings and numbered lines inside a code fence (` ``` `) are not steps.
 - In a list guide, the lines under an item belong to it (indented or not) until the next item.
+
+## Lists
+
+A guide with `kind: list` in its front matter is a to-do list. The drawer shows every item with a box, ticks them in any order, opens one at a time for its details, and lets the person add an item at the bottom. Items are written like steps: `## ` headings or numbered lines, and in a list also plain bullets (`- `, `* `, `+ `) or boxes (`- [ ] `, `- [x] `; the `x` is ignored, the drawer keeps its own ticks). Headings win over numbers, numbers over bullets. The same fields apply to an item; with `url:`, "where am I" offers the item for the page the person is on, whichever it is.
+
+An agent asked for "a Handrail to-do list" writes this:
+
+<!-- example: todo -->
+```markdown
+---
+title: Before the site goes live
+kind: list
+for: Dragnoz
+---
+
+Once each. Tick them in any order.
+
+- [ ] Point the domain at the server
+      url: https://dns.example.org/*
+      expect: the site opens at its own name within an hour
+- [ ] Turn on HTTPS
+      url: https://panel.example.org/ssl
+- [ ] Nightly backups, kept 30 days
+      note: where the backups land
+- [ ] Two-factor login for every admin
+- [ ] Try it on a phone
+      optional: true
+```
 
 ## Fields
 
@@ -154,7 +183,7 @@ The parser turns Markdown into exactly this shape, and a guide may arrive as JSO
 }
 ```
 
-In JSON, `url`, `copy`, `target` and `sources` may be a single string instead of a list. Missing fields are filled with their empty value. `expect`, `image` and `note` are left out when empty.
+In JSON, `url`, `copy`, `target` and `sources` may be a single string instead of a list. Missing fields are filled with their empty value. `expect`, `image` and `note` are left out when empty; `kind` is `"list"` for a list and left out otherwise.
 
 ## Feeds
 

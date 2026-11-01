@@ -29,6 +29,8 @@ export interface Guide {
   by?: string;
   for?: string;
   version?: string;
+  /** `list`: a to-do list, ticked in any order. Absent for a step guide. */
+  kind?: 'list';
   sources: string[];
   /** Markdown before the first step. */
   intro: string;
