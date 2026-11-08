@@ -13,6 +13,32 @@ function example(name: string): string {
   return m[1]!;
 }
 
+describe('routines', () => {
+  const r = parseGuide(example('routine'));
+  const u = parseGuide(example('uses-routine'));
+
+  it('a guide with kind: routine is a routine', () => {
+    expect(r.kind).toBe('routine');
+    expect(r.id).toBe('firefox-temporary-add-on');
+    expect(r.steps.map((s) => s.title)).toEqual(['Open the add-on debugging page', 'Remove the old card', 'Load the zip']);
+    expect(r.steps[1]!.optional).toBe(true);
+  });
+
+  it('routine: is a field on a step, and absent when not given', () => {
+    expect(u.kind).toBeUndefined();
+    expect(u.steps[1]!.routine).toBe('firefox-temporary-add-on');
+    expect(u.steps[1]!.expect).toBe('a card "Tool" in the list');
+    expect(u.steps[0]!.routine).toBeUndefined();
+    expect('routine' in u.steps[0]!).toBe(false);
+  });
+
+  it('survives the JSON form', () => {
+    expect(fromJson(toJson(u))).toEqual(u);
+    expect(fromJson(toJson(r)).kind).toBe('routine');
+    expect(fromJson({ title: 'x', kind: 'Routine', steps: [{ title: 'a', routine: ' r1 ' }] }).steps[0]!.routine).toBe('r1');
+  });
+});
+
 describe('the headings example (deploy-key)', () => {
   const g = parseGuide(example('deploy-key'));
 

@@ -70,12 +70,19 @@ export interface SentItem {
   error?: string;
 }
 
+/** How often a routine was done, by its id. */
+export interface Run {
+  count: number;
+  last: string;
+}
+
 export interface State {
   guides: Record<string, StoredGuide>;
   progress: Record<string, Progress>;
   settings: Settings;
   assistants: Record<string, Assistant>;
   sent: SentItem[];
+  runs: Record<string, Run>;
 }
 
 export interface ExportFile extends State {
@@ -87,7 +94,7 @@ export interface ExportFile extends State {
 export const defaultSettings: Settings = { textSize: 'normal', notesTo: { kind: 'copy' }, badge: true };
 
 const SENT_MAX = 50;
-const KEYS = ['guides', 'progress', 'settings', 'assistants', 'sent'] as const;
+const KEYS = ['guides', 'progress', 'settings', 'assistants', 'sent', 'runs'] as const;
 
 const area = () => browser.storage.local;
 
@@ -99,7 +106,23 @@ export async function loadState(): Promise<State> {
     settings: { ...defaultSettings, ...(r.settings ?? {}) },
     assistants: r.assistants ?? {},
     sent: Array.isArray(r.sent) ? r.sent : [],
+    runs: r.runs ?? {},
   };
+}
+
+/** The routines among the guides, by id: what a step's `routine:` points at. */
+export function routinesOf(state: State): Record<string, Guide> {
+  const out: Record<string, Guide> = {};
+  for (const g of Object.values(state.guides)) if (g.guide.kind === 'routine') out[g.guide.id] = g.guide;
+  return out;
+}
+
+/** Counts one more time a routine was done. */
+export async function addRun(id: string): Promise<void> {
+  const { runs } = await loadState();
+  const r = runs[id] ?? { count: 0, last: '' };
+  runs[id] = { count: r.count + 1, last: now() };
+  await area().set({ runs });
 }
 
 export async function saveGuide(stored: StoredGuide): Promise<void> {
@@ -225,6 +248,7 @@ export function parseImport(text: string): ExportFile {
     settings: { ...defaultSettings, ...(o.settings ?? {}) },
     assistants: o.assistants && typeof o.assistants === 'object' ? o.assistants : {},
     sent: Array.isArray(o.sent) ? o.sent : [],
+    runs: o.runs && typeof o.runs === 'object' ? o.runs : {},
   };
 }
 
@@ -246,12 +270,17 @@ export async function importState(file: ExportFile): Promise<number> {
     .sort((a, b) => b.time.localeCompare(a.time))
     .slice(0, SENT_MAX);
   state.settings = { ...state.settings, ...file.settings };
+  for (const [id, r] of Object.entries(file.runs ?? {})) {
+    const here = state.runs[id];
+    if (!here || r.count > here.count) state.runs[id] = r;
+  }
   await area().set({
     guides: state.guides,
     progress: state.progress,
     settings: state.settings,
     assistants: state.assistants,
     sent: state.sent,
+    runs: state.runs,
   });
   return ids.length;
 }

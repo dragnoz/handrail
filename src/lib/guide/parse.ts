@@ -3,7 +3,7 @@ import type { Guide, Step } from './types';
 /** A guide that cannot be read. The message is for the person, in plain words. */
 export class GuideError extends Error {}
 
-const KNOWN_FIELDS = new Set(['url', 'copy', 'expect', 'target', 'image', 'note', 'optional']);
+const KNOWN_FIELDS = new Set(['url', 'copy', 'expect', 'target', 'image', 'note', 'optional', 'routine']);
 const FIELD = /^(?:[ ]{2,}|\t+)([A-Za-z][\w-]*):(?:[ \t]+(.*)|[ \t]*)$/;
 const H1 = /^#(?!#)[ \t]+(.*?)[ \t]*#*[ \t]*$/;
 const H2 = /^##(?!#)[ \t]+(.*?)[ \t]*#*[ \t]*$/;
@@ -27,7 +27,8 @@ export function parseGuide(text: string): Guide {
   }
 
   const { meta, body } = splitFrontMatter(src);
-  const isList = str(meta.kind).toLowerCase() === 'list';
+  const kind = str(meta.kind).toLowerCase();
+  const isList = kind === 'list';
   const lines = body.split('\n');
   const mode = detectMode(lines, isList);
   if (!mode) {
@@ -50,6 +51,7 @@ export function parseGuide(text: string): Guide {
   if (str(meta.for)) guide.for = str(meta.for);
   if (str(meta.version)) guide.version = str(meta.version);
   if (isList) guide.kind = 'list';
+  else if (kind === 'routine') guide.kind = 'routine';
   return guide;
 }
 
@@ -73,6 +75,7 @@ export function fromJson(input: unknown): Guide {
     if (str(s.expect)) step.expect = str(s.expect);
     if (str(s.image)) step.image = str(s.image);
     if (str(s.note)) step.note = str(s.note);
+    if (str(s.routine)) step.routine = str(s.routine);
     return step;
   });
   const title = str(o.title) || steps[0]?.title || 'Untitled guide';
@@ -86,7 +89,8 @@ export function fromJson(input: unknown): Guide {
   if (str(o.by)) guide.by = str(o.by);
   if (str(o.for)) guide.for = str(o.for);
   if (str(o.version)) guide.version = str(o.version);
-  if (str(o.kind).toLowerCase() === 'list') guide.kind = 'list';
+  const kind = str(o.kind).toLowerCase();
+  if (kind === 'list' || kind === 'routine') guide.kind = kind;
   return guide;
 }
 
@@ -273,6 +277,9 @@ function applyField(step: Step, key: string, value: string): void {
       break;
     case 'optional':
       step.optional = truthy(value);
+      break;
+    case 'routine':
+      if (value) step.routine = value;
       break;
   }
 }

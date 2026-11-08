@@ -28,6 +28,7 @@ Stores come in 0.4.
 
 - **Add a guide**: paste its text into the box at the top, or paste a link to a `.md` file (Handrail asks for that one site), or open a file, or drop a `.md` on the panel.
 - **Walk it**: the open step shows its title, body, chips for values to copy, what you should see, and a picture. **Next**, **Back**, **Skip** on optional steps, **Done** on the last. Done steps fold to a ticked line; click one to reopen it.
+- **Routines**: the things you do more than once (load an add-on, sign in somewhere) written once as a short guide with `kind: routine`; any step says `routine: <id>` and shows it as a pill: open the first time, closed once you have done it, with a count. Home lists them in their own row.
 - **Lists**: a guide with `kind: list` is a to-do list: every item with a box, ticked in any order, one open at a time for its details and notes; `n` ticks the open one and moves on; add an item at the bottom. Ask an assistant for "a Handrail to-do list" and that is what it writes.
 - **Keys**: `n` next, `p` back, `c` copy the first value, `o` open the step's address here.
 - **Open here**: a link in a step, or the step's address, opens in the tab you are on. Never a new window.
@@ -37,6 +38,8 @@ Stores come in 0.4.
 - **Settings**: assistants, where notes go, text size, what you sent, export and import everything as one JSON file, remove everything.
 
 ![The site check on example.org: a problem on the page itself, with content pushed off-screen and spam wording; a machine-made account name in the open user list; the login stays on the site; the button to walk the cleanup](docs/screenshots/0.3-sitecheck.png)
+
+![A routine inside a step: the pill "Load a temporary add-on in Firefox · 2 steps · first time", open, with the routine's steps and a chip under it](docs/screenshots/0.3-routine.png)
 
 ![A list: seven items with boxes, two ticked, the first open with its address to open and what to expect, and the line to add an item](docs/screenshots/0.3-list.png)
 
@@ -58,7 +61,7 @@ Anyone can be an assistant. The whole contract is one short document, [docs/assi
 
 ## The guide format
 
-A guide is Markdown. Steps are the `## ` headings (or a numbered list). Fields sit in an indented block right under a step. Front matter `kind: list` makes it a to-do list, ticked in any order, with `- [ ]` items if you like.
+A guide is Markdown. Steps are the `## ` headings (or a numbered list). Fields sit in an indented block right under a step. Front matter `kind: list` makes it a to-do list, ticked in any order, with `- [ ]` items if you like. `kind: routine` makes a routine other guides use with `routine: <id>` on a step.
 
 ```markdown
 ---
@@ -89,7 +92,7 @@ In the repository: Settings, Deploy keys, Add deploy key.
 | `optional: true` | the step may be skipped. |
 | `target:` | for 0.5 (pointing at the page). |
 
-The whole contract, with the JSON form, is in [docs/guide-format.md](docs/guide-format.md). Example guides are in [guides/](guides/): a practice walk through the drawer, one that teaches you to write a guide, one that connects an assistant, a go-live checklist as a list, and the one above.
+The whole contract, with the JSON form, is in [docs/guide-format.md](docs/guide-format.md). Example guides are in [guides/](guides/): a practice walk through the drawer, one that teaches you to write a guide, one that connects an assistant, a go-live checklist as a list, a routine for loading a temporary add-on in Firefox, and the one above.
 
 ## Permissions, and why
 

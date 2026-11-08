@@ -72,7 +72,7 @@ Takes two minutes. Nothing is lost.
 | `by` | who wrote it |
 | `for` | who it is for |
 | `version` | the guide's own version, any text |
-| `kind` | `list` makes the guide a to-do list: every item shown, ticked in any order. Without it, the guide is steps, walked in order. |
+| `kind` | `list` makes the guide a to-do list: every item shown, ticked in any order. `routine` makes it a routine: a short set of steps other guides use by id, shown as a pill. Without it, the guide is steps, walked in order. |
 | `sources` | where it came from: one address, a `[a, b]` list, or `- item` lines |
 
 Values may be quoted or not. Other keys are ignored.
@@ -111,6 +111,50 @@ Once each. Tick them in any order.
       optional: true
 ```
 
+## Routines
+
+Some steps are the same every time: load an add-on, sign in somewhere, restart a service. A **routine** is such a step written once, as a short guide with `kind: routine` and a stable `id`. Any step in any guide then says `routine: <id>` and the drawer shows that routine inside the step as a **pill**: its title, how many steps, and how often it has been done. The first time the pill is open and the routine's steps are listed under it, with their chips and addresses; once it has been done before the pill is closed and a press opens it. Ticking the step counts one more time. Walking a routine on its own, from the Routines row on Home, counts too.
+
+A routine the drawer does not have shows as a line saying so; pasting it, or taking it from an assistant's list, fills the pill. A routine never contains another routine. The step's own fields and body still show, after the pill.
+
+<!-- example: routine -->
+```markdown
+---
+title: Load a temporary add-on in Firefox
+id: firefox-temporary-add-on
+kind: routine
+for: Dragnoz
+---
+
+Lasts until Firefox closes.
+
+## 1. Open the add-on debugging page
+    url: about:debugging#/runtime/this-firefox
+    expect: "This Firefox" with a list of temporary extensions
+## 2. Remove the old card
+    optional: true
+    expect: the card is gone
+Only when the same add-on is already there: Remove on its card.
+## 3. Load the zip
+    expect: a new card with the add-on's name
+Load Temporary Add-on… → pick the zip in Downloads → Open.
+```
+
+<!-- example: uses-routine -->
+```markdown
+---
+title: Try the new build
+id: try-the-new-build
+---
+
+## 1. Download the build
+    url: https://example.org/builds/tool-1.2.0-firefox.zip
+## 2. Load it
+    routine: firefox-temporary-add-on
+    expect: a card "Tool" in the list
+## 3. Press the button on any page
+```
+
 ## Fields
 
 The field block is the lines right under the step's title (blank lines before it are fine), each indented by two or more spaces or a tab, in the form `key: value`. The first line that is not a known field ends the block; everything after is the body. A line with an unknown key is not a field: it stays in the body as written, so a typo shows rather than vanishes.
@@ -124,6 +168,7 @@ The field block is the lines right under the step's title (blank lines before it
 | `image:` | a picture for the step: an address or a data URI. |
 | `note:` | a hint for the notes-back panel (0.2): what to paste back at this step. |
 | `optional: true` | the step may be skipped. `yes`, `on` and `1` also mean true. |
+| `routine:` | the id of a routine this step is done with. The drawer shows that routine as a pill inside the step. |
 
 ### How `url:` matches
 
@@ -183,7 +228,7 @@ The parser turns Markdown into exactly this shape, and a guide may arrive as JSO
 }
 ```
 
-In JSON, `url`, `copy`, `target` and `sources` may be a single string instead of a list. Missing fields are filled with their empty value. `expect`, `image` and `note` are left out when empty; `kind` is `"list"` for a list and left out otherwise.
+In JSON, `url`, `copy`, `target` and `sources` may be a single string instead of a list. Missing fields are filled with their empty value. `expect`, `image`, `note` and `routine` are left out when empty; `kind` is `"list"` for a list, `"routine"` for a routine, and left out otherwise.
 
 ## Feeds
 

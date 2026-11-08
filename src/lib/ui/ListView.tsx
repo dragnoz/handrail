@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { parseGuide, urlMatches, whichItem } from '../guide';
-import { freshProgress, now, saveGuide, setProgress, type Progress, type State, type StoredGuide } from '../store';
+import { addRun, freshProgress, now, routinesOf, saveGuide, setProgress, type Progress, type State, type StoredGuide } from '../store';
 import { message, type ActiveTab } from './hooks';
 import { Markdown } from './Markdown';
 import { NotesBox } from './NotesBox';
@@ -55,6 +55,8 @@ export function ListView({ stored, progress, state, tab, onHome, onSettings }: P
 
   /** Ticks an item, or unticks a ticked one. */
   function tick(i: number): void {
+    const r = guide.steps[i]?.routine;
+    if (r && !done.includes(i)) void addRun(r);
     const d = done.includes(i) ? done.filter((x) => x !== i) : uniq([...done, i]);
     save(progressWith(d, skipped.filter((x) => x !== i)));
   }
@@ -212,7 +214,7 @@ export function ListView({ stored, progress, state, tab, onHome, onSettings }: P
               {isOpen && (
                 <>
                   <section class="card" aria-label={s.title}>
-                    <StepBody step={s} index={i} onCopy={copyValue} onOpen={openUrl} />
+                    <StepBody step={s} index={i} onCopy={copyValue} onOpen={openUrl} routines={routinesOf(state)} runs={state.runs} />
                     <div class="actions">
                       {s.optional && !isSkipped && (
                         <button class="btn" onClick={() => skip(i)}>

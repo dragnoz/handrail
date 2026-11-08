@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { whereAmI, type Step } from '../guide';
-import { freshProgress, now, setProgress, type Progress, type State, type StoredGuide } from '../store';
+import { addRun, freshProgress, now, routinesOf, setProgress, type Progress, type Run, type State, type StoredGuide } from '../store';
+import type { Guide } from '../guide';
 import type { ActiveTab } from './hooks';
 import { Markdown } from './Markdown';
 import { NotesBox } from './NotesBox';
@@ -41,6 +42,8 @@ export function GuideView({ stored, progress, state, tab, onHome, onSettings }: 
   function next(): void {
     if (finished) return;
     const c = current + 1;
+    if (step?.routine) void addRun(step.routine);
+    if (c >= n && guide.kind === 'routine') void addRun(guide.id);
     const patch: Partial<Progress> = {
       current: c,
       done: uniq([...p.done, current]),
@@ -185,6 +188,8 @@ export function GuideView({ stored, progress, state, tab, onHome, onSettings }: 
                   onSkip={skip}
                   onCopy={copyValue}
                   onOpen={open}
+                  routines={routinesOf(state)}
+                  runs={state.runs}
                 />
                 {step && <NotesBox stored={stored} step={step} index={i} state={state} tab={tab} onSettings={onSettings} />}
               </li>
@@ -240,9 +245,11 @@ interface CardProps {
   onSkip: () => void;
   onCopy: (v: string) => void;
   onOpen: (url: string) => void;
+  routines: Record<string, Guide>;
+  runs: Record<string, Run>;
 }
 
-function StepCard({ step, index, isLast, headingRef, onNext, onBack, onSkip, onCopy, onOpen }: CardProps) {
+function StepCard({ step, index, isLast, headingRef, onNext, onBack, onSkip, onCopy, onOpen, routines, runs }: CardProps) {
   const id = `step-${index}`;
   return (
     <section class="card" aria-labelledby={id}>
@@ -255,7 +262,7 @@ function StepCard({ step, index, isLast, headingRef, onNext, onBack, onSkip, onC
         </h2>
         {step.optional && <span class="tag">optional</span>}
       </div>
-      <StepBody step={step} index={index} onCopy={onCopy} onOpen={onOpen} />
+      <StepBody step={step} index={index} onCopy={onCopy} onOpen={onOpen} routines={routines} runs={runs} />
       <div class="actions">
         <button class="btn" onClick={onBack} disabled={index === 0}>
           Back

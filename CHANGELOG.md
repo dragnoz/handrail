@@ -2,6 +2,13 @@
 
 One line per change, per version.
 
+## 0.3.2 — 2026-11-08
+
+- Routines: `kind: routine` makes a short guide other guides use; a step with `routine: <id>` shows it as a pill, open the first time, closed once done, with a count of times done.
+- Home: a Routines row, closed, with the count per routine; walking a routine from there counts too.
+- Export and import carry the counts.
+- guides/firefox-temporary-add-on.md: a routine, the example.
+
 ## 0.3.1 — 2026-11-01
 
 - Lists: `kind: list` in the front matter makes a to-do list. Every item shows with a box, ticked in any order; one opens at a time for its details, chips and notes; `n` ticks the open item and opens the next one left; "where am I" offers any item left for the page you are on.

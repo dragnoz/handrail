@@ -309,6 +309,130 @@ h2.section {
   margin: 0.5rem 0;
 }
 
+/* routines: a row on Home, a pill inside a step */
+.routines {
+  margin-top: 1rem;
+}
+
+.routines summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.routines summary::-webkit-details-marker {
+  display: none;
+}
+
+.routines summary .section {
+  margin: 0;
+}
+
+.routines summary::before {
+  content: '▸';
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.routines[open] summary::before {
+  content: '▾';
+}
+
+.routines .guides {
+  margin-top: 0.5rem;
+}
+
+.routine {
+  margin-top: 0.6rem;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--soft);
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pill:hover {
+  background: var(--card);
+}
+
+.pill .pill-mark {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.pill .pill-name {
+  flex: 1 1 auto;
+  font-weight: 600;
+}
+
+.pill .pill-meta {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.routine.open .pill {
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.routine-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem 0.6rem 0.5rem;
+  border: 1px solid var(--accent);
+  border-top: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.routine-steps > li {
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--line);
+}
+
+.routine-steps > li:first-child {
+  border-top: 0;
+}
+
+.rs-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.rs-head .num {
+  color: var(--muted);
+  font-size: 0.8rem;
+  min-width: 1rem;
+}
+
+.rs-head .rs-title {
+  font-weight: 600;
+}
+
+.pill-missing {
+  margin: 0.6rem 0 0;
+  padding: 0.45rem 0.6rem;
+  border-left: 3px solid var(--muted);
+  background: var(--soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
 /* ---- guide ------------------------------------------------------------- */
 
 .progress {

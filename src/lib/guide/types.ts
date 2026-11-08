@@ -20,6 +20,8 @@ export interface Step {
   note?: string;
   /** The step may be skipped without being done. */
   optional: boolean;
+  /** The id of a routine (a guide with `kind: routine`) this step is done with. Shown as a pill. */
+  routine?: string;
 }
 
 export interface Guide {
@@ -29,8 +31,8 @@ export interface Guide {
   by?: string;
   for?: string;
   version?: string;
-  /** `list`: a to-do list, ticked in any order. Absent for a step guide. */
-  kind?: 'list';
+  /** `list`: a to-do list, ticked in any order. `routine`: a short set of steps other guides use by id. Absent for a step guide. */
+  kind?: 'list' | 'routine';
   sources: string[];
   /** Markdown before the first step. */
   intro: string;

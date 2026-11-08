@@ -81,6 +81,26 @@ function guideFor(site: string): string {
   ].join('\n');
 }
 
+function routineText(): string {
+  return [
+    '---',
+    'title: Load a temporary add-on in Firefox',
+    'id: firefox-temporary-add-on',
+    'kind: routine',
+    '---',
+    '## 1. Open the add-on debugging page',
+    '    copy: echo loaded',
+    '## 2. Remove the old card',
+    '    optional: true',
+    'Only when the same add-on is already there.',
+    '',
+  ].join('\n');
+}
+
+function usesRoutineText(): string {
+  return ['---', 'title: Try the new build', 'id: try-the-new-build', '---', '## 1. Download the build', '## 2. Load it', '    routine: firefox-temporary-add-on', '    expect: a card in the list', '## 3. Press the button', ''].join('\n');
+}
+
 async function addGuide(panel: Page, text: string): Promise<void> {
   await panel.getByLabel('Paste a guide, or a link to one').fill(text);
   await panel.getByRole('button', { name: 'Add guide' }).click();
@@ -191,6 +211,45 @@ test('export writes one JSON file with the guide in it', async ({ panel, site })
 test('a text without steps is refused in plain words', async ({ panel }) => {
   await addGuide(panel, 'Just a paragraph, no steps.');
   await expect(panel.getByRole('alert')).toContainText('No steps found');
+});
+
+test('a routine: a pill inside a step, open the first time, closed once done, counted on Home', async ({ panel }) => {
+  await addGuide(panel, routineText());
+  await panel.getByRole('button', { name: '← Guides' }).click();
+  await panel.getByText('Routines').click();
+  await expect(panel.getByText('first time')).toBeVisible();
+
+  await addGuide(panel, usesRoutineText());
+  // step 2 carries the pill, open because it has never been done; its chip copies
+  await panel.keyboard.press('n');
+  const pill = panel.getByRole('button', { name: /Load a temporary add-on in Firefox/ });
+  await expect(pill).toBeVisible();
+  await expect(pill).toHaveAttribute('aria-expanded', 'true');
+  await expect(pill).toContainText('2 steps · first time');
+  await expect(panel.getByText('Only when the same add-on is already there')).toBeVisible();
+  await panel.screenshot({ path: 'docs/screenshots/0.3-routine.png' });
+  await panel.getByRole('button', { name: 'Copy: echo loaded' }).click();
+  expect(await copied(panel)).toBe('echo loaded');
+
+  // Next counts one run; coming back, the pill is closed and says so; a press opens it
+  await panel.keyboard.press('n');
+  await panel.keyboard.press('p');
+  await expect(pill).toHaveAttribute('aria-expanded', 'false');
+  await expect(pill).toContainText('done once');
+  await expect(panel.getByText('Only when the same add-on is already there')).toBeHidden();
+  await pill.click();
+  await expect(panel.getByText('Only when the same add-on is already there')).toBeVisible();
+
+  // Home's Routines row shows the count
+  await panel.getByRole('button', { name: '← Guides' }).click();
+  await panel.getByText('Routines').click();
+  await expect(panel.getByText('done once')).toBeVisible();
+});
+
+test('a step that names a routine the drawer does not have says so', async ({ panel }) => {
+  await addGuide(panel, usesRoutineText().replace('firefox-temporary-add-on', 'nowhere'));
+  await panel.keyboard.press('n');
+  await expect(panel.getByText('The routine “nowhere” is not here yet.')).toBeVisible();
 });
 
 test('a list: ticked in any order, n ticks and moves on, an item added, all done', async ({ panel }) => {

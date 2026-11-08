@@ -16,6 +16,7 @@ import { fetchText } from '../ext';
 import { message, type ActiveTab } from './hooks';
 import { toast } from './toast';
 import { addGuideFrom, Assistants } from './Assistants';
+import { timesText } from './StepBody';
 
 interface Props {
   state: State;
@@ -120,7 +121,9 @@ export function Home({ state, tab, onOpen, onSettings, onFrame, onSiteCheck }: P
     }
   }
 
-  const guides = Object.values(state.guides).sort((a, b) => b.updated.localeCompare(a.updated));
+  const all = Object.values(state.guides).sort((a, b) => b.updated.localeCompare(a.updated));
+  const guides = all.filter((g) => g.guide.kind !== 'routine');
+  const routines = all.filter((g) => g.guide.kind === 'routine');
 
   return (
     <div
@@ -202,17 +205,46 @@ export function Home({ state, tab, onOpen, onSettings, onFrame, onSiteCheck }: P
 
       <h2 class="section">Your guides</h2>
       {guides.length === 0 && <p class="empty">No guides yet. Paste one above, or open a file.</p>}
-      <ul class="guides">
-        {guides.map((g) => {
+      <ul class="guides">{guides.map(card)}</ul>
+
+      {routines.length > 0 && (
+        <details class="routines">
+          <summary>
+            <span class="section">Routines</span>
+            <span class="hint">{routines.length === 1 ? 'one thing' : `${routines.length} things`} you do more than once</span>
+          </summary>
+          <ul class="guides">{routines.map(card)}</ul>
+        </details>
+      )}
+
+      <Assistants state={state} tab={tab} onOpen={onOpen} onFrame={onFrame} />
+      {Object.keys(state.assistants).length === 0 && (
+        <p class="hint">
+          An assistant can send guides here.{' '}
+          <button class="link" onClick={onSettings}>
+            Add one in Settings.
+          </button>
+        </p>
+      )}
+    </div>
+  );
+
+  function card(g: StoredGuide) {
           const p = state.progress[g.guide.id];
           const n = g.guide.steps.length;
+          const routine = g.guide.kind === 'routine';
+          const run = state.runs[g.guide.id];
           return (
             <li key={g.guide.id} class="guide-card">
               <button class="open-guide" onClick={() => onOpen(g.guide.id)}>
                 <div class="name">{g.guide.title}</div>
                 <div class="line">
                   <span>{byLine(g, state)}</span>
-                  <span class={isFinished(p, n) ? 'state finished' : 'state'}>{progressText(p, n, g.guide.kind === 'list' ? 'items' : 'steps')}</span>
+                  {routine ? (
+                    <span class={run ? 'state finished' : 'state'}>{timesText(run?.count ?? 0)}</span>
+                  ) : (
+                    <span class={isFinished(p, n) ? 'state finished' : 'state'}>{progressText(p, n, g.guide.kind === 'list' ? 'items' : 'steps')}</span>
+                  )}
                 </div>
               </button>
               <div class="tools">
@@ -240,25 +272,13 @@ export function Home({ state, tab, onOpen, onSettings, onFrame, onSiteCheck }: P
               </div>
             </li>
           );
-        })}
-      </ul>
-
-      <Assistants state={state} tab={tab} onOpen={onOpen} onFrame={onFrame} />
-      {Object.keys(state.assistants).length === 0 && (
-        <p class="hint">
-          An assistant can send guides here.{' '}
-          <button class="link" onClick={onSettings}>
-            Add one in Settings.
-          </button>
-        </p>
-      )}
-    </div>
-  );
+  }
 }
 
 function byLine(g: StoredGuide, state: State): string {
   const parts: string[] = [];
   if (g.guide.kind === 'list') parts.push('a list');
+  if (g.guide.kind === 'routine') parts.push(`${g.guide.steps.length} steps`);
   if (g.guide.by) parts.push(`by ${g.guide.by}`);
   if (g.source.kind === 'file' && g.source.name) parts.push(`from ${g.source.name}`);
   else if (g.source.kind === 'url' && g.source.url) parts.push(`from ${hostOf(g.source.url)}`);
